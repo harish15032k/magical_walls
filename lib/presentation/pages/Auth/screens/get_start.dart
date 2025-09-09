@@ -47,6 +47,8 @@ class _GetStartState extends State<GetStart> {
           Padding(
             padding: const EdgeInsets.all(18.0),
             child: CommonButton(
+              backgroundColor: CommonColors.primaryColor,
+              textColor: CommonColors.white,
               text: 'Get Started',
               onTap: () {
                 Get.to(

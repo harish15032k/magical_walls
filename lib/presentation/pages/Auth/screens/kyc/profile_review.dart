@@ -5,12 +5,9 @@ import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:magical_walls/core/constants/app_colors.dart';
-import 'package:magical_walls/core/constants/app_text.dart';
-import 'package:magical_walls/presentation/widgets/common_button.dart';
+
+import '../../../Home/screens/bottom_bar.dart';
 
 class ProfileUnderReview extends StatefulWidget {
   const ProfileUnderReview({super.key});
@@ -20,7 +17,7 @@ class ProfileUnderReview extends StatefulWidget {
 }
 
 class _ProfileUnderReviewState extends State<ProfileUnderReview> {
-  String status = 'loading';
+  String status = 'approved';
 
   @override
   void initState() {
@@ -86,7 +83,7 @@ class _ProfileUnderReviewState extends State<ProfileUnderReview> {
                 ),
                 SizedBox(height: Get.height * 0.03),
                 if (status == 'approved')
-                  CommonButton(text: "Go to Dashboard", onTap: () {},backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white,)
+                  CommonButton(text: "Go to Dashboard", onTap: () {Get.to(()=>BottomBar(initialIndex: 0,));},backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white,)
                 else if (status == 'rejected')
                   CommonButton(text: "Re-verify KYC", onTap: () {},backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white,),
               ],

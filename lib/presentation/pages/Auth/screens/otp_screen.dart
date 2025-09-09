@@ -134,6 +134,7 @@ class _OtpScreenState extends State<OtpScreen> {
               },),
               SizedBox(height: 20,),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('Didn’t receive the code?',style: CommonTextStyles.regular14.copyWith(color: CommonColors.black),),
                   SizedBox(width: 5,),
