@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'customer': 'Ravi Kumar',
       'date': '25 July 2025',
       'timeSlot': '10 AM - 12 PM',
-      'address': 'Flat 202, Lotus Apartments, Chennai',
+      'address': 'Flat 202, Lotus Apartments, Salem',
     },
   ];
 
