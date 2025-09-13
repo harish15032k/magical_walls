@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/core/utils/utils.dart';
+import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/service_add.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
@@ -19,7 +20,8 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final FocusNode _otpFocus = FocusNode();
-
+  AuthController controller = AuthController()
+;
   @override
   void initState() {
     super.initState();
@@ -123,15 +125,19 @@ class _OtpScreenState extends State<OtpScreen> {
           SizedBox(height: Get.height * 0.035),
           Column(
             children: [
-              CommonButton(backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white, text: 'Verify OTP',onTap: (){
-                FocusScope.of(context).unfocus();
-                if(pin.length!=4){
-                  showCustomSnackBar(context: context, errorMessage: "Pin should be 4 digit");
-                }
-                else{
-                  Get.to(()=>SelectService(),transition: Transition.rightToLeft);
-                }
-              },),
+              Obx(()=>
+               CommonButton(isLoading: controller.isLoading.value, backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white, text: 'Verify OTP',onTap: (){
+                  FocusScope.of(context).unfocus();
+                  if(pin.length!=4){
+                    showCustomSnackBar(context: context, errorMessage: "Pin should be 4 digit");
+                  }
+                  else{
+                    controller.verifyOtp(pin);
+
+
+                  }
+                },),
+              ),
               SizedBox(height: 20,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

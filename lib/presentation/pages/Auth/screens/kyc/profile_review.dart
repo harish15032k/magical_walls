@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
+import 'package:magical_walls/presentation/pages/Auth/screens/kyc/service_add.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Home/screens/bottom_bar.dart';
 
@@ -18,14 +18,6 @@ class ProfileUnderReview extends StatefulWidget {
 
 class _ProfileUnderReviewState extends State<ProfileUnderReview> {
   String status = 'approved';
-
-  @override
-  void initState() {
-    super.initState();
-
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +41,12 @@ class _ProfileUnderReviewState extends State<ProfileUnderReview> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: Get.height * 0.2),
-                status == 'approved'
-                    ? Image.asset(
-                        'assets/images/review_icon_ok.png',
-                        width: 100,
-                      )
-                    : status == 'rejected'
-                    ? Icon(Icons.close, color: Colors.red, size: 100)
-                    : Image.asset('assets/images/review_icon.png', width: 100),
+                if (status == 'approved')
+                  Image.asset('assets/images/review_icon_ok.png', width: 100)
+                else if (status == 'rejected')
+                  const Icon(Icons.close, color: Colors.red, size: 100)
+                else
+                  Image.asset('assets/images/review_icon.png', width: 100),
                 SizedBox(height: Get.height * 0.02),
                 Text(
                   status == 'approved'
@@ -82,10 +72,30 @@ class _ProfileUnderReviewState extends State<ProfileUnderReview> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: Get.height * 0.03),
+
+
                 if (status == 'approved')
-                  CommonButton(text: "Go to Dashboard", onTap: () {Get.to(()=>BottomBar(initialIndex: 0,));},backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white,)
+                  CommonButton(
+                    text: "Go to Dashboard",
+                    onTap: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setBool('iskycverified', true);
+
+                      Get.offAll(() => BottomBar(initialIndex: 0));
+                    },
+                    backgroundColor: CommonColors.primaryColor,
+                    textColor: CommonColors.white,
+                  )
                 else if (status == 'rejected')
-                  CommonButton(text: "Re-verify KYC", onTap: () {},backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white,),
+                  CommonButton(
+                    text: "Re-verify KYC",
+                    onTap: () {
+
+                      Get.to(() => const SelectService());
+                    },
+                    backgroundColor: CommonColors.primaryColor,
+                    textColor: CommonColors.white,
+                  ),
               ],
             ),
           ),
@@ -94,3 +104,4 @@ class _ProfileUnderReviewState extends State<ProfileUnderReview> {
     );
   }
 }
+

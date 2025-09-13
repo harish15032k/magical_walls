@@ -8,6 +8,8 @@ import 'package:magical_walls/presentation/pages/Auth/screens/otp_screen.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/common_textfield.dart';
 
+import '../controller/auth_controller.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -16,7 +18,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController mobile = TextEditingController();
+  final AuthController controller = AuthController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,27 +49,33 @@ class _LoginScreenState extends State<LoginScreen> {
           CommonTextField(
             maxLength: 10,
 
-            controller: mobile,
+            controller: controller.mobile,
             label: 'Mobile Number',
             hintText: 'Enter your mobile number',
             isRequired: true,
             keyboardType: TextInputType.phone,
           ),
           SizedBox(height: Get.height * 0.035),
-          CommonButton(
-            backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white,
-            text: 'Get OTP',
-            onTap: () {
-              FocusScope.of(context).unfocus();
+          Obx(()=>
+             CommonButton(
+               isLoading: controller.isLoading.value,
+              backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white,
+              text: 'Get OTP',
+              onTap: () {
+                FocusScope.of(context).unfocus();
 
-              if(mobile.text.length != 10){
-                showCustomSnackBar(context: context, errorMessage: 'Number Should be 10 digit',  );
-              }else{
-              Get.to(
-                () => OtpScreen(mobile: mobile.text),
-                transition: Transition.rightToLeft,
-              );}
-            },
+                if (controller.mobile.text.length != 10) {
+                  showCustomSnackBar(
+                    context: context,
+                    errorMessage: 'Number should be 10 digits',
+                  );
+                }
+                else{
+                  controller.getOtp()
+            ;
+              }
+              },
+            ),
           ),
         ],
       ),

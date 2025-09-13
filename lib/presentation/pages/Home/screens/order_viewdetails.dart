@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:magical_walls/presentation/pages/Home/screens/startjobverifyotp.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text.dart';
 import '../../../widgets/common_button.dart';
+
 
 class JobDetailsScreen extends StatefulWidget {
   final Map<String, String?> job;
@@ -188,7 +189,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                 Expanded(
                                   child: CommonButton(
                                     onTap: (){
-                                      Get.to(()=>StartJobOtp(),transition:Transition.topLevel);
+                                      // Get.to(()=>StartJobOtp(),transition:Transition.topLevel);
                                     },
                                     backgroundColor: CommonColors.primaryColor,
                                     textColor: CommonColors.white,

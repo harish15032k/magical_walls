@@ -209,7 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showLogoutPopup(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: false, // User must tap a button to dismiss
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
           insetPadding: EdgeInsets.fromLTRB(14, 6, 14, 6),
@@ -243,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     borderColor: CommonColors.purple,
                       textColor: CommonColors.purple,
                       onTap: () {
-                        Navigator.of(context).pop(); // Close the dialog
+                        Navigator.of(context).pop();
                       },
                     ),
                     SizedBox(width: 15,),
@@ -254,9 +254,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       backgroundColor: CommonColors.primaryColor,
                       textColor: CommonColors.white,
                       onTap: () {
-                        // Add logout logic here (e.g., clear session, navigate to login screen)
+
                         Navigator.of(context).pop();
-                        Get.offAllNamed('/login'); // Example navigation to login screen
+
                       },
                     ),
                   ],

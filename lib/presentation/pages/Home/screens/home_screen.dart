@@ -5,6 +5,7 @@ import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/presentation/pages/Home/screens/notification_screen.dart';
 import 'package:magical_walls/presentation/widgets/common_box.dart';
 import '../../../widgets/common_button.dart';
+
 import 'order_viewdetails.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -143,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          // 🔹 Custom Tab Buttons (like your screenshot)
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(

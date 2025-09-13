@@ -1,13 +1,13 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
-
-import 'get_start.dart';
-import 'login.dart';
+import 'package:magical_walls/presentation/pages/Auth/screens/get_start.dart';
+import 'package:magical_walls/presentation/pages/Auth/screens/login.dart';
+import 'package:magical_walls/presentation/pages/Auth/screens/kyc/profile_review.dart';
+import 'package:magical_walls/presentation/pages/Auth/screens/kyc/service_add.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -29,9 +29,27 @@ class _SplashScreenState extends State<SplashScreen> {
     try {
       await Future.delayed(const Duration(seconds: 2));
 
+      final prefs = await SharedPreferences.getInstance();
+      bool? isFirstOpen = prefs.getBool("isFirstOpen");
+      bool? isLogin = prefs.getBool("isLogin");
+      bool? isKycCompleted = prefs.getBool("isKycCompleted");
+
+      Widget nextScreen;
+
+      if (isFirstOpen == null || isFirstOpen == true) {
+        prefs.setBool("isFirstOpen", false);
+        nextScreen = const GetStart();
+      } else if (isLogin != true) {
+        nextScreen = const LoginScreen();
+      } else if (isKycCompleted != true) {
+        nextScreen = const SelectService();
+      } else {
+        nextScreen = const ProfileUnderReview();
+      }
+
       if (mounted) {
-        Get.to(
-          () => const GetStart(),
+        Get.offAll(
+              () => nextScreen,
           transition: Transition.rightToLeft,
           duration: const Duration(milliseconds: 500),
         );
@@ -39,9 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } catch (e) {
       debugPrint("Error loading app: $e");
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -52,8 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
-          Spacer(),
+          const Spacer(),
           Center(
             child: Image.asset(
               "assets/images/logo.png",
@@ -61,14 +76,10 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 350,
             ),
           ),
-
-          Spacer(),
+          const Spacer(),
           if (_isLoading) ...[
-             Text(
-              "Loading",
-              style:CommonTextStyles.regular12,
-            ),
-             SizedBox(height:Get.height*0.01 ),
+            Text("Loading", style: CommonTextStyles.regular12),
+            SizedBox(height: Get.height * 0.01),
             SizedBox(
               width: 100,
               child: LinearProgressIndicator(
@@ -77,7 +88,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
           ],
-           SizedBox(height: Get.height*0.06),
+          SizedBox(height: Get.height * 0.08),
         ],
       ),
     );

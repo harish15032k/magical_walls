@@ -26,7 +26,8 @@ class CommonButton extends StatelessWidget {
     this.borderRadius = 8,
     this.onTap,
     this.isLoading = false,
-    this.isimageneed=false, this.imagefile,
+    this.isimageneed = false,
+    this.imagefile,
   });
 
   @override
@@ -47,27 +48,28 @@ class CommonButton extends StatelessWidget {
         alignment: Alignment.center,
         child: isLoading
             ? const SizedBox(
-          height: 20,
-          width: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: CommonColors.primaryColor,
-          ),
-        )
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: CommonColors.white,
+                ),
+              )
             : Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              isimageneed?  Image.asset(imagefile!,width: 18,):SizedBox.shrink(),
-                if(isimageneed)
-                SizedBox(width: 8,),
-                Text(
-                          text,
-                          style: CommonTextStyles.medium16.copyWith(
-                color: textColor ?? CommonColors.primaryColor,
-                          ),
-                        ),
-              ],
-            ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  isimageneed
+                      ? Image.asset(imagefile!, width: 18)
+                      : SizedBox.shrink(),
+                  if (isimageneed) SizedBox(width: 8),
+                  Text(
+                    text,
+                    style: CommonTextStyles.medium16.copyWith(
+                      color: textColor ?? CommonColors.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
