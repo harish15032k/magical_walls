@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                 }
                 else{
-                  controller.getOtp()
+                  controller.getOtp( context)
             ;
               }
               },

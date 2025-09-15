@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/core/utils/utils.dart';
+import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/personal_details.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/common_textfield.dart';
@@ -15,17 +16,17 @@ class SelectService extends StatefulWidget {
 }
 
 class _SelectServiceState extends State<SelectService> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller.getServiceList();
+  }
   final TextEditingController _serviceController = TextEditingController();
+  AuthController controller = AuthController();
 
-  List<String> serviceList = [
-    'Electrician',
-    'Plumber',
-    'Painter',
-    'Carpenter',
-    'Home Cleaning',
-  ];
 
-  String selectedService = "";
+  
 
   @override
   Widget build(BuildContext context) {
@@ -80,40 +81,54 @@ class _SelectServiceState extends State<SelectService> {
                     ),
                     SizedBox(height: Get.height * 0.020),
 
+                    Obx(()=>
+
+                    controller.isLoading.value?CircularProgressIndicator():controller.serviceList.isEmpty?Text('Empty'):
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      children: serviceList.map((service) {
-                        final isSelected = selectedService == service;
+                      children: controller.serviceList.map((service) {
+                        final isinlist = controller.selectedService.contains(service.id);
+
                         return GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedService = service;
-                              _serviceController.text = service;
+
+                              if (isinlist) {
+
+                                controller.selectedService.remove(service.id);
+                              } else {
+
+                                controller.selectedService.add(service.id);
+                              }
+
+
+                              _serviceController.text = controller.serviceList
+                                  .where((s) => controller.selectedService.contains(s.id))
+                                  .map((s) => s.name ?? '')
+                                  .join(', ');
                             });
                           },
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
-                              color: isSelected
+                              color: isinlist
                                   ? const Color(0xFF5D0491)
                                   : CommonColors.textFieldGrey,
                             ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 8,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                             child: Text(
-                              service,
+                              service.name ?? '',
                               style: CommonTextStyles.regular14.copyWith(
-                                color: isSelected
-                                    ? CommonColors.white
-                                    : CommonColors.black,
+                                color: isinlist ? CommonColors.white : CommonColors.black,
                               ),
                             ),
                           ),
                         );
                       }).toList(),
+                    ),
+
+
                     ),
                     const SizedBox(height: 100),
                   ],

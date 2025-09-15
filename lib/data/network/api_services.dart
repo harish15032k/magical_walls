@@ -22,56 +22,43 @@ abstract class BaseApiService {
 
 class NetworkApiService extends BaseApiService {
   static const int _maxRetries = 3;
-  static const Duration _timeout = Duration(seconds: 15);
+  static const Duration _timeout = Duration(seconds: 30);
+  static const Duration _uploadTimeout = Duration(minutes: 2);
   static const Duration _initialBackoff = Duration(milliseconds: 400);
 
-  http.Client _createClient() => http.Client();
+  // ✅ Reuse single client
+  final http.Client _client = http.Client();
 
   @override
   Future<Map<String, dynamic>> post(String url, dynamic data, {String? token}) async {
     return _request(() async {
-      final client = _createClient();
-      try {
-        return await client
-            .post(
-          Uri.parse(url),
-          body: jsonEncode(data),
-          headers: _headers(token),
-        )
-            .timeout(_timeout);
-      } finally {
-        client.close();
-      }
+      return await _client
+          .post(
+        Uri.parse(url),
+        body: jsonEncode(data),
+        headers: _headers(token),
+      )
+          .timeout(_timeout);
     }, url, data);
   }
 
   @override
   Future<Map<String, dynamic>> get(String url, {Map<String, dynamic>? params, String? token}) async {
     return _request(() async {
-      final client = _createClient();
-      try {
-        final uri = Uri.parse(url).replace(
-          queryParameters: params?.map((k, v) => MapEntry(k, v.toString())),
-        );
-        return await client.get(uri, headers: _headers(token)).timeout(_timeout);
-      } finally {
-        client.close();
-      }
+      final uri = Uri.parse(url).replace(
+        queryParameters: params?.map((k, v) => MapEntry(k, v.toString())),
+      );
+      return await _client.get(uri, headers: _headers(token)).timeout(_timeout);
     }, url, params);
   }
 
   @override
   Future<Map<String, dynamic>> delete(String url, {Map<String, dynamic>? params, String? token}) async {
     return _request(() async {
-      final client = _createClient();
-      try {
-        final uri = Uri.parse(url).replace(
-          queryParameters: params?.map((k, v) => MapEntry(k, v.toString())),
-        );
-        return await client.delete(uri, headers: _headers(token)).timeout(_timeout);
-      } finally {
-        client.close();
-      }
+      final uri = Uri.parse(url).replace(
+        queryParameters: params?.map((k, v) => MapEntry(k, v.toString())),
+      );
+      return await _client.delete(uri, headers: _headers(token)).timeout(_timeout);
     }, url, params);
   }
 
@@ -83,26 +70,21 @@ class NetworkApiService extends BaseApiService {
         String? token,
       }) async {
     return _multipartRequest(() async {
-      final client = _createClient();
-      try {
-        final request = http.MultipartRequest('POST', Uri.parse(url))
-          ..headers.addAll(_headers(token))
-          ..fields.addAll(fields);
+      final request = http.MultipartRequest('POST', Uri.parse(url))
+        ..headers.addAll(_headers(token))
+        ..fields.addAll(fields);
 
-        for (var file in files) {
-          final mimeType = lookupMimeType(file.path!) ?? 'application/octet-stream';
-          request.files.add(await http.MultipartFile.fromPath(
-            'files[]',
-            file.path!,
-            contentType: MediaType.parse(mimeType),
-          ));
-        }
-
-        final streamedResponse = await client.send(request).timeout(_timeout);
-        return await http.Response.fromStream(streamedResponse);
-      } finally {
-        client.close();
+      for (var file in files) {
+        final mimeType = lookupMimeType(file.path!) ?? 'application/octet-stream';
+        request.files.add(await http.MultipartFile.fromPath(
+          'files[]',
+          file.path!,
+          contentType: MediaType.parse(mimeType),
+        ));
       }
+
+      final streamedResponse = await _client.send(request).timeout(_uploadTimeout);
+      return await http.Response.fromStream(streamedResponse);
     }, url, fields);
   }
 
@@ -127,7 +109,9 @@ class NetworkApiService extends BaseApiService {
           return _errorResponse('No internet connection');
         }
 
+        final stopwatch = Stopwatch()..start();
         final response = await request();
+        stopwatch.stop();
 
         log(
           '🔹 API CALL\n'
@@ -135,7 +119,8 @@ class NetworkApiService extends BaseApiService {
               'REQUEST : ${jsonEncode(data)}\n'
               'STATUS  : ${response.statusCode}\n'
               'HEADERS : ${response.headers}\n'
-              'RESPONSE: ${response.body}',
+              'RESPONSE: ${response.body}\n'
+              '⏱ Duration: ${stopwatch.elapsed.inMilliseconds} ms',
           name: 'API',
         );
 
@@ -182,14 +167,18 @@ class NetworkApiService extends BaseApiService {
 
     while (retryCount < _maxRetries) {
       try {
+        final stopwatch = Stopwatch()..start();
         final response = await request();
+        stopwatch.stop();
+
         log(
           '🔹 MULTIPART API CALL\n'
               'URL     : $url\n'
               'REQUEST : $data\n'
               'STATUS  : ${response.statusCode}\n'
               'HEADERS : ${response.headers}\n'
-              'RESPONSE: ${response.body}',
+              'RESPONSE: ${response.body}\n'
+              '⏱ Duration: ${stopwatch.elapsed.inMilliseconds} ms',
           name: 'API',
         );
 

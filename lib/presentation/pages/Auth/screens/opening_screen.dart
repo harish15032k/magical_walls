@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
       final prefs = await SharedPreferences.getInstance();
       bool? isFirstOpen = prefs.getBool("isFirstOpen");
       bool? isLogin = prefs.getBool("isLogin");
-      bool? isKycCompleted = prefs.getBool("isKycCompleted");
+      int? isKycCompleted = prefs.getInt("isKycCompleted");
 
       Widget nextScreen;
 
@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
         nextScreen = const GetStart();
       } else if (isLogin != true) {
         nextScreen = const LoginScreen();
-      } else if (isKycCompleted != true) {
+      } else if (isKycCompleted != 1) {
         nextScreen = const SelectService();
       } else {
         nextScreen = const ProfileUnderReview();

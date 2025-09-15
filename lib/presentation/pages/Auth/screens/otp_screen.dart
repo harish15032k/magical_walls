@@ -132,7 +132,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     showCustomSnackBar(context: context, errorMessage: "Pin should be 4 digit");
                   }
                   else{
-                    controller.verifyOtp(pin);
+                    controller.verifyOtp(pin,widget.mobile,context);
 
 
                   }
