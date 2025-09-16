@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/core/utils/utils.dart';
+import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/profile_review.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/common_textfield.dart';
@@ -15,11 +16,7 @@ class BankDetails extends StatefulWidget {
 }
 
 class _BankDetailsState extends State<BankDetails> {
-  final TextEditingController accountHolderName = TextEditingController();
-  final TextEditingController bank = TextEditingController();
-  final TextEditingController accountNumber = TextEditingController();
-  final TextEditingController ifscCode = TextEditingController();
-  bool isTermsAccepted = false;
+  final AuthController controller = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -57,28 +54,28 @@ class _BankDetailsState extends State<BankDetails> {
                 ),
                 SizedBox(height: Get.height * 0.022),
                 CommonTextField(
-                  controller: accountHolderName,
+                  controller: controller.accountHolderName,
                   label: 'Account Holder Name',
                   hintText: '',
                   isRequired: true,
                 ),
                 SizedBox(height: Get.height * 0.020),
                 CommonTextField(
-                  controller: bank,
+                  controller: controller.bank,
                   label: 'Bank',
                   hintText: '',
                   isRequired: true,
                 ),
                 SizedBox(height: Get.height * 0.020),
                 CommonTextField(
-                  controller: accountNumber,
+                  controller: controller.accountNumber,
                   label: 'Account Number',
                   hintText: '',
                   isRequired: true,
                 ),
                 SizedBox(height: Get.height * 0.020),
                 CommonTextField(
-                  controller: ifscCode,
+                  controller: controller.ifscCode,
                   label: 'IFSC Code',
                   hintText: '',
                   isRequired: true,
@@ -90,10 +87,10 @@ class _BankDetailsState extends State<BankDetails> {
                       hoverColor: CommonColors.primaryColor,
                       activeColor: CommonColors.primaryColor,
                       checkColor: CommonColors.white,
-                      value: isTermsAccepted,
+                      value: controller.isTermsAccepted,
                       onChanged: (value) {
                         setState(() {
-                          isTermsAccepted = value ?? false;
+                          controller.isTermsAccepted = value ?? false;
                         });
                       },
                     ),
@@ -101,7 +98,7 @@ class _BankDetailsState extends State<BankDetails> {
                       child: GestureDetector(
                         onTap: () {
                           setState(() {
-                            isTermsAccepted = !isTermsAccepted;
+                            controller.isTermsAccepted = !controller.isTermsAccepted;
                           });
                         },
                         child: Text(
@@ -126,26 +123,28 @@ class _BankDetailsState extends State<BankDetails> {
           right: 18,
           bottom: MediaQuery.of(context).viewInsets.bottom + 40,
         ),
-        child: CommonButton(
-          backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white,
-          text: "Next",
-          onTap: () {
-            FocusScope.of(context).unfocus();
-            if (accountHolderName.text.isEmpty ||
-                accountNumber.text.isEmpty ||
-                ifscCode.text.isEmpty ||
-                !isTermsAccepted) {
-              showCustomSnackBar(
-                context: context,
-                errorMessage: "Fill all fields and accept terms",
-              );
-            } else {
-              Get.to(
-                () => ProfileUnderReview(),
-                transition: Transition.rightToLeft,
-              );
-            }
-          },
+        child: Obx(
+          ()=> CommonButton(
+            isLoading: controller.isLoading.value,
+            backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white,
+            text: "Next",
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              if (controller.accountHolderName.text.isEmpty ||
+                  controller.accountNumber.text.isEmpty ||
+                  controller.ifscCode.text.isEmpty ||
+                  !controller.isTermsAccepted) {
+                showCustomSnackBar(
+                  context: context,
+                  errorMessage: "Fill all fields and accept terms",
+                );
+              } else {
+                 controller.kycCompleted(context);
+
+
+              }
+            },
+          ),
         ),
       ),
     );

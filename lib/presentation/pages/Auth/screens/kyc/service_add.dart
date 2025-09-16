@@ -7,6 +7,7 @@ import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/personal_details.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/common_textfield.dart';
+import 'package:magical_walls/presentation/widgets/shimmer.dart';
 
 class SelectService extends StatefulWidget {
   const SelectService({super.key});
@@ -23,7 +24,7 @@ class _SelectServiceState extends State<SelectService> {
     controller.getServiceList();
   }
   final TextEditingController _serviceController = TextEditingController();
-  AuthController controller = AuthController();
+  final AuthController controller = Get.put(AuthController());
 
 
   
@@ -83,7 +84,9 @@ class _SelectServiceState extends State<SelectService> {
 
                     Obx(()=>
 
-                    controller.isLoading.value?CircularProgressIndicator():controller.serviceList.isEmpty?Text('Empty'):
+                    controller.isLoading.value?ShimmerWidgets.serviceShimmer():controller.serviceList.isEmpty?Text('Empty'):
+
+
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,

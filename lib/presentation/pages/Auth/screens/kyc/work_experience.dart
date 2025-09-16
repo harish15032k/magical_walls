@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/core/utils/utils.dart';
+import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/id_verification.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/common_textfield.dart';
@@ -21,8 +22,8 @@ class WorkDetails extends StatefulWidget {
 }
 
 class _WorkDetailsState extends State<WorkDetails> {
-  final TextEditingController work = TextEditingController();
-  File? _pickedImage;
+  final AuthController controller = Get.put(AuthController());
+
 
   Future<void> imagepicker() async {
     final pickedFile = await ImagePicker().pickImage(
@@ -31,7 +32,7 @@ class _WorkDetailsState extends State<WorkDetails> {
 
     if (pickedFile != null) {
       setState(() {
-        _pickedImage = File(pickedFile.path);
+        controller.pickedSkilledImage = File(pickedFile.path);
       });
     }
   }
@@ -74,7 +75,7 @@ class _WorkDetailsState extends State<WorkDetails> {
 
                 CommonTextField(
                   keyboardType: TextInputType.phone,
-                  controller: work,
+                  controller: controller.work,
                   label: 'Your Experience',
                   hintText: '',
                   isRequired: true,
@@ -109,8 +110,8 @@ class _WorkDetailsState extends State<WorkDetails> {
                             color: CommonColors.fileUpload,
                           ),
                           width: double.infinity,
-                          height:_pickedImage==null? 42:200,
-                          child: _pickedImage == null
+                          height: controller.pickedSkilledImage==null? 42:200,
+                          child:  controller.pickedSkilledImage == null
                               ? Center(
                             child: Text(
                               'Click to Upload',
@@ -120,7 +121,7 @@ class _WorkDetailsState extends State<WorkDetails> {
                               : ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.file(
-                              _pickedImage!,
+                              controller.pickedSkilledImage!,
                               fit: BoxFit.cover,
                               width: double.infinity,
                             ),
@@ -146,9 +147,10 @@ class _WorkDetailsState extends State<WorkDetails> {
           text: "Next",
           onTap: () {
             FocusScope.of(context).unfocus();
-            if(work.text.isNotEmpty){
+            if(controller.work.text.isNotEmpty){
               Get.to(()=>IdVerification(),transition: Transition.rightToLeft );
             }
+
             else{
               showCustomSnackBar(context: context, errorMessage: "Please Enter Work Experience");
             }

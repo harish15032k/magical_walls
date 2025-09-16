@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
+import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/service_add.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
@@ -17,91 +20,130 @@ class ProfileUnderReview extends StatefulWidget {
 }
 
 class _ProfileUnderReviewState extends State<ProfileUnderReview> {
-  String status = 'approved';
+  AuthController controller = Get.put(AuthController());
+  @override
+  void initState() {
+    super.initState();
+    controller.getKycStatus();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: CommonColors.white,
-      body: ListView(
+      body: Column(
         children: [
-          SizedBox(height: Get.height * 0.04),
-          Text(
-            status == 'approved'
-                ? "Welcome Onboard!"
-                : status == 'rejected'
-                ? "Profile Rejected"
-                : "Profile Under Review",
-            style: CommonTextStyles.medium24,
-            textAlign: TextAlign.center,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: Get.height * 0.2),
-                if (status == 'approved')
-                  Image.asset('assets/images/review_icon_ok.png', width: 100)
-                else if (status == 'rejected')
-                  const Icon(Icons.close, color: Colors.red, size: 100)
-                else
-                  Image.asset('assets/images/review_icon.png', width: 100),
-                SizedBox(height: Get.height * 0.02),
-                Text(
-                  status == 'approved'
-                      ? "You’re Approved!"
-                      : status == 'rejected'
-                      ? "Your profile has been rejected."
-                      : "You’re Almost There!",
-                  style: CommonTextStyles.medium20.copyWith(
-                    color: CommonColors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: Get.height * 0.01),
-                Text(
-                  status == 'approved'
-                      ? "Start receiving jobs, grow your reputation, and earn \n more with MagicWall."
-                      : status == 'rejected'
-                      ? "Please re-upload your documents and try again."
-                      : "Your documents are under verification.\nThis usually takes 24-48 hours.\nWe’ll notify you once your profile is approved.",
-                  style: CommonTextStyles.regular14.copyWith(
-                    color: CommonColors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: Get.height * 0.03),
+          Obx(() => controller.isLoading.value
+              ? Padding(
+                padding: const EdgeInsets.only(top: 5.0),
+                child: const LinearProgressIndicator(),
+              )
+              : const SizedBox.shrink()),
+          Expanded(
+            child: StreamBuilder<String>(
+              stream: controller.kycStatusStream,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return  Center(child: SizedBox(width: 20,height: 20, child: CircularProgressIndicator(strokeWidth: 2,color: CommonColors.primaryColor,)));
+                }
 
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error: ${snapshot.error}"),
+                  );
+                }
 
-                if (status == 'approved')
-                  CommonButton(
-                    text: "Go to Dashboard",
-                    onTap: () async {
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setBool('iskycverified', true);
+                String status = snapshot.data ?? '';
 
-                      Get.offAll(() => BottomBar(initialIndex: 0));
-                    },
-                    backgroundColor: CommonColors.primaryColor,
-                    textColor: CommonColors.white,
-                  )
-                else if (status == 'rejected')
-                  CommonButton(
-                    text: "Re-verify KYC",
-                    onTap: () {
+                return ListView(
+                  children: [
+                    SizedBox(height: Get.height * 0.04),
+                    Text(
+                      status == 'Approved'
+                          ? "Welcome Onboard!"
+                          : status == 'Rejected'
+                          ? "Profile Rejected"
+                          : "Profile Under Review",
+                      style: CommonTextStyles.medium24,
+                      textAlign: TextAlign.center,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 22,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(height: Get.height * 0.2),
+                          if (status == 'Approved')
+                            Image.asset('assets/images/review_icon_ok.png',
+                                width: 100)
+                          else if (status == 'Rejected')
+                            const Icon(Icons.close,
+                                color: Colors.red, size: 100)
+                          else
+                            Image.asset('assets/images/review_icon.png',
+                                width: 100),
+                          SizedBox(height: Get.height * 0.02),
+                          Text(
+                            status == 'Approved'
+                                ? "You’re Approved!"
+                                : status == 'Rejected'
+                                ? "Your profile has been Rejected."
+                                : "You’re Almost There!",
+                            style: CommonTextStyles.medium20.copyWith(
+                              color: CommonColors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: Get.height * 0.01),
+                          Text(
+                            status == 'Approved'
+                                ? "Start receiving jobs, grow your reputation, and earn \n more with MagicWall."
+                                : status == 'Rejected'
+                                ? "Please re-upload your documents and try again."
+                                : "Your documents are under verification.\nThis usually takes 24-48 hours.\nWe’ll notify you once your profile is Approved.",
+                            style: CommonTextStyles.regular14.copyWith(
+                              color: CommonColors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: Get.height * 0.03),
+                          if (status == 'Approved')
+                            CommonButton(
+                              text: "Go to Dashboard",
+                              onTap: () async {
+                                final prefs =
+                                await SharedPreferences.getInstance();
+                                await prefs.setBool('iskycverified', true);
 
-                      Get.to(() => const SelectService());
-                    },
-                    backgroundColor: CommonColors.primaryColor,
-                    textColor: CommonColors.white,
-                  ),
-              ],
+                                Get.offAll(() => BottomBar(initialIndex: 0));
+                              },
+                              backgroundColor: CommonColors.primaryColor,
+                              textColor: CommonColors.white,
+                            )
+                          else if (status == 'Rejected')
+                            CommonButton(
+                              text: "Re-verify KYC",
+                              onTap: () {
+                                Get.to(() => const SelectService());
+                              },
+                              backgroundColor: CommonColors.primaryColor,
+                              textColor: CommonColors.white,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
       ),
     );
   }
-}
 
+
+}

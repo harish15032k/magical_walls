@@ -1,4 +1,5 @@
 import 'package:magical_walls/data/urls/api_urls.dart';
+import 'package:magical_walls/presentation/pages/Auth/model/kyc_model.dart';
 import 'package:magical_walls/presentation/pages/Auth/model/service_listmodel.dart';
 
 import '../../../../data/network/api_services.dart';
@@ -17,5 +18,8 @@ class AuthRepository {
   serviceList(String token) async {
     final res = await http.get(ApiUrls.serviceList,token:token );
     return ServiceListRes.fromMap(res);
+  }getKycStatus(String token) async {
+    final res = await http.get(ApiUrls.kycStatus,token:token );
+    return KycRes.fromMap(res);
   }
 }

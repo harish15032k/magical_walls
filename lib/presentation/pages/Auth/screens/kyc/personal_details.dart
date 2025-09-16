@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/core/utils/utils.dart';
+import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/work_experience.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/common_textfield.dart';
 
 import '../../../../widgets/common_droplist.dart';
+import '../../controller/auth_controller.dart';
 
 class PersonalDetails extends StatefulWidget {
   const PersonalDetails({super.key});
@@ -17,10 +19,8 @@ class PersonalDetails extends StatefulWidget {
 }
 
 class _PersonalDetailsState extends State<PersonalDetails> {
-  final TextEditingController name = TextEditingController();
-  final TextEditingController dob = TextEditingController();
-  final TextEditingController gender = TextEditingController();
-  final TextEditingController lang = TextEditingController();
+  final AuthController controller = Get.put(AuthController());
+
   bool isgenderclicked=false;
   bool islanguageclicked=false;
 List<String> Gender =['Male','Female'];
@@ -62,7 +62,7 @@ List<String> Language =['English','Tamil','Telugu','Hindi','English','Tamil','Te
                 SizedBox(height: Get.height * 0.022),
 
                 CommonTextField(
-                  controller: name,
+                  controller: controller.name,
                   label: 'Full Name',
                   hintText: '',
                   isRequired: true,
@@ -76,7 +76,7 @@ List<String> Language =['English','Tamil','Telugu','Hindi','English','Tamil','Te
                     padding: const EdgeInsets.all(12.0),
                     child: Image.asset("assets/images/calendar.png", width: 5),
                   ),
-                  controller: dob,
+                  controller: controller.dob,
                   label: 'Date Of Birth',
                   onSuffixTap: () async {
                     DateTime? picked = await showDatePicker(
@@ -104,7 +104,7 @@ List<String> Language =['English','Tamil','Telugu','Hindi','English','Tamil','Te
                     );
 
                     if (picked != null) {
-                      dob.text = "${picked.day}/${picked.month}/${picked.year}";
+                      controller.dob.text = "${picked.day}/${picked.month}/${picked.year}";
                     }
                   },
 
@@ -130,7 +130,7 @@ List<String> Language =['English','Tamil','Telugu','Hindi','English','Tamil','Te
                     padding: const EdgeInsets.all(12.0),
                     child: Image.asset("assets/images/arrowdown.png", width: 5),
                   ),
-                  controller: gender,
+                  controller: controller.gender,
                   label: 'Gender',
                   hintText: '',
                   isRequired: true,
@@ -140,7 +140,7 @@ List<String> Language =['English','Tamil','Telugu','Hindi','English','Tamil','Te
                   items: Gender,
                   onSelect: (gen) {
                     setState(() {
-                      gender.text = gen;
+                      controller.gender.text = gen;
                       isgenderclicked = false;
                     });
                   },
@@ -166,7 +166,7 @@ List<String> Language =['English','Tamil','Telugu','Hindi','English','Tamil','Te
                     padding: const EdgeInsets.all(12.0),
                     child: Image.asset("assets/images/arrowdown.png", width: 5),
                   ),
-                  controller: lang,
+                  controller: controller.lang,
                   label: 'Language Spoken',
                   hintText: '',
                   isRequired: true,
@@ -176,7 +176,7 @@ List<String> Language =['English','Tamil','Telugu','Hindi','English','Tamil','Te
                   items: Language,
                   onSelect: (gen) {
                     setState(() {
-                      lang.text = gen;
+                      controller.lang.text = gen;
                       islanguageclicked = false;
                     });
                   },
@@ -200,9 +200,10 @@ List<String> Language =['English','Tamil','Telugu','Hindi','English','Tamil','Te
           text: "Next",
           onTap: () {
             FocusScope.of(context).unfocus();
-            if(name.text.isEmpty||dob.text.isEmpty||gender.text.isEmpty||lang.text.isEmpty){
+            if(controller.name.text.isEmpty||controller.dob.text.isEmpty||controller.gender.text.isEmpty||controller.lang.text.isEmpty){
               showCustomSnackBar(context: context, errorMessage: "Fill All Fields");
             }
+
             else{
               Get.to(()=>WorkDetails(),transition: Transition.rightToLeft);
             }

@@ -18,7 +18,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final AuthController controller = AuthController();
+  final AuthController controller = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {

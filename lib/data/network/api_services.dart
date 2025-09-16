@@ -17,6 +17,7 @@ abstract class BaseApiService {
       Map<String, String> fields,
       List<PlatformFile> files, {
         String? token,
+        Map<String, String>? fileFieldMap,
       });
 }
 
@@ -68,22 +69,30 @@ class NetworkApiService extends BaseApiService {
       Map<String, String> fields,
       List<PlatformFile> files, {
         String? token,
+        Map<String, String>? fileFieldMap,
       }) async {
     return _multipartRequest(() async {
       final request = http.MultipartRequest('POST', Uri.parse(url))
         ..headers.addAll(_headers(token))
         ..fields.addAll(fields);
 
-      for (var file in files) {
-        final mimeType = lookupMimeType(file.path!) ?? 'application/octet-stream';
-        request.files.add(await http.MultipartFile.fromPath(
-          'files[]',
-          file.path!,
-          contentType: MediaType.parse(mimeType),
-        ));
+      for (final file in files) {
+        if (file.path != null) {
+          final mimeType = lookupMimeType(file.path!) ?? 'application/octet-stream';
+
+          // 👇 pick correct field name
+          final fieldName = fileFieldMap?[file.name] ?? 'files[]';
+
+          request.files.add(await http.MultipartFile.fromPath(
+            fieldName,
+            file.path!,
+            contentType: MediaType.parse(mimeType),
+          ));
+        }
       }
 
-      final streamedResponse = await _client.send(request).timeout(_uploadTimeout);
+      final streamedResponse =
+      await _client.send(request).timeout(_uploadTimeout);
       return await http.Response.fromStream(streamedResponse);
     }, url, fields);
   }

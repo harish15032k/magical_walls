@@ -3,15 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
-import 'package:magical_walls/presentation/widgets/aadhar_file.dart';
+import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/common_textfield.dart';
-
-
-
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-
 import '../../../../../core/utils/utils.dart';
 import 'bank_details.dart';
 
@@ -23,30 +19,31 @@ class IdVerification extends StatefulWidget {
 }
 
 class _IdVerificationState extends State<IdVerification> {
-  final TextEditingController work = TextEditingController();
-  File? _pickedImage;
-  String? _selectedAadhaarFile;
+  final AuthController controller = Get.put(AuthController());
 
-  Future<void> imagepicker() async {
+  Future<void> _pickAadhaarImage() async {
     final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
     );
 
     if (pickedFile != null) {
       setState(() {
-        _pickedImage = File(pickedFile.path);
+        controller.selectedAadhaarFile = pickedFile.path; // Set full path
       });
     }
   }
 
+  Future<void> _pickPanImage() async {
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
 
-  void _onAadhaarFileSelected(String? fileName) {
-    setState(() {
-      _selectedAadhaarFile = fileName;
-    });
+    if (pickedFile != null) {
+      setState(() {
+        controller.pickedPanImage = File(pickedFile.path);
+      });
+    }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +99,39 @@ class _IdVerificationState extends State<IdVerification> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    AadhaarUploadWidget(onFileSelected: _onAadhaarFileSelected),
+                    DottedBorder(
+                      options: RoundedRectDottedBorderOptions(
+                        dashPattern: [8, 4],
+                        strokeWidth: 1,
+                        radius: Radius.circular(8),
+                        color: CommonColors.grey.withAlpha(80),
+                      ),
+                      child: GestureDetector(
+                        onTap: _pickAadhaarImage,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: CommonColors.fileUpload,
+                          ),
+                          width: double.infinity,
+                          height: controller.selectedAadhaarFile == null ? 42 : 200,
+                          child: controller.selectedAadhaarFile == null
+                              ? Center(
+                            child: Text(
+                              'Click to Upload',
+                              style: CommonTextStyles.regular14,
+                            ),
+                          )
+                              : ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              File(controller.selectedAadhaarFile!),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: Get.height * 0.020),
@@ -133,16 +162,14 @@ class _IdVerificationState extends State<IdVerification> {
                         color: CommonColors.grey.withAlpha(80),
                       ),
                       child: GestureDetector(
-                        onTap: () {
-                          imagepicker();
-                        },
+                        onTap: _pickPanImage,
                         child: Container(
                           decoration: BoxDecoration(
                             color: CommonColors.fileUpload,
                           ),
                           width: double.infinity,
-                          height: _pickedImage == null ? 42 : 200,
-                          child: _pickedImage == null
+                          height: controller.pickedPanImage == null ? 42 : 200,
+                          child: controller.pickedPanImage == null
                               ? Center(
                             child: Text(
                               'Click to Upload',
@@ -152,7 +179,7 @@ class _IdVerificationState extends State<IdVerification> {
                               : ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.file(
-                              _pickedImage!,
+                              controller.pickedPanImage!,
                               fit: BoxFit.cover,
                               width: double.infinity,
                             ),
@@ -174,29 +201,29 @@ class _IdVerificationState extends State<IdVerification> {
           bottom: MediaQuery.of(context).viewInsets.bottom + 40,
         ),
         child: CommonButton(
-          backgroundColor: CommonColors.primaryColor,textColor: CommonColors.white,
+          backgroundColor: CommonColors.primaryColor,
+          textColor: CommonColors.white,
           text: "Next",
           onTap: () {
             FocusScope.of(context).unfocus();
 
-            if (_selectedAadhaarFile == null && _pickedImage == null) {
+            if (controller.selectedAadhaarFile == null && controller.pickedPanImage == null) {
               showCustomSnackBar(
                 context: context,
                 errorMessage: "Please upload both Aadhaar and PAN card.",
               );
-            } else if (_selectedAadhaarFile == null) {
+            } else if (controller.selectedAadhaarFile == null) {
               showCustomSnackBar(
                 context: context,
                 errorMessage: "Please upload Aadhaar card.",
               );
-            } else if (_pickedImage == null) {
+            } else if (controller.pickedPanImage == null) {
               showCustomSnackBar(
                 context: context,
                 errorMessage: "Please upload PAN card.",
               );
             } else {
-
-               Get.to(() => BankDetails(), transition: Transition.rightToLeft);
+              Get.to(() => BankDetails(), transition: Transition.rightToLeft);
             }
           },
         ),

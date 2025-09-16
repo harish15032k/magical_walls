@@ -20,8 +20,8 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final FocusNode _otpFocus = FocusNode();
-  AuthController controller = AuthController()
-;
+  final AuthController controller = Get.put(AuthController());
+
   @override
   void initState() {
     super.initState();
