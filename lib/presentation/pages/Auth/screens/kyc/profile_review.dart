@@ -6,6 +6,7 @@ import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/service_add.dart';
+import 'package:magical_walls/presentation/pages/location/screens/location_access.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -118,7 +119,7 @@ class _ProfileUnderReviewState extends State<ProfileUnderReview> {
                                 await SharedPreferences.getInstance();
                                 await prefs.setBool('iskycverified', true);
 
-                                Get.offAll(() => BottomBar(initialIndex: 0));
+                                Get.offAll(() =>LocationAccessScreen() );
                               },
                               backgroundColor: CommonColors.primaryColor,
                               textColor: CommonColors.white,

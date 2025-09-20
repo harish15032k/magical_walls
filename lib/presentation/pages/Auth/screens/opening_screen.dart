@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:magical_walls/presentation/pages/Home/screens/bottom_bar.dart';
+import 'package:magical_walls/presentation/pages/location/screens/location_access.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:magical_walls/core/constants/app_colors.dart';
@@ -33,6 +35,8 @@ class _SplashScreenState extends State<SplashScreen> {
       bool? isFirstOpen = prefs.getBool("isFirstOpen");
       bool? isLogin = prefs.getBool("isLogin");
       int? isKycCompleted = prefs.getInt("isKycCompleted");
+      bool? isKycVerified = prefs.getBool("iskycverified");
+      bool? isLocationUpdated = prefs.getBool("locationUpdated");
 
       Widget nextScreen;
 
@@ -43,13 +47,15 @@ class _SplashScreenState extends State<SplashScreen> {
         nextScreen = const LoginScreen();
       } else if (isKycCompleted != 1) {
         nextScreen = const SelectService();
+      } else if (isKycVerified == true) {
+        nextScreen =  isLocationUpdated==true? BottomBar():LocationAccessScreen();
       } else {
         nextScreen = const ProfileUnderReview();
       }
 
       if (mounted) {
         Get.offAll(
-              () => nextScreen,
+          () => nextScreen,
           transition: Transition.rightToLeft,
           duration: const Duration(milliseconds: 500),
         );

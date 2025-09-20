@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/presentation/pages/Earnings/screens/withdraw.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../controller/earnings_controller.dart';
+import '../model/earnings_model.dart' show Datum;
 
 class EarningsScreen extends StatefulWidget {
   const EarningsScreen({super.key});
@@ -13,6 +19,38 @@ class EarningsScreen extends StatefulWidget {
 }
 
 class _EarningsScreenState extends State<EarningsScreen> {
+  final EarningsController controller = Get.put(EarningsController());
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialData();
+
+  }
+
+
+  void _loadInitialData() {
+    final now = DateTime.now();
+    final start = now.subtract(Duration(days: now.weekday - 1));
+    final end = start.add(const Duration(days: 6));
+    controller.getEarnings(start.toIso8601String(), end.toIso8601String());
+  }
+
+  void _navigateWeek(bool isNext) {
+    final week = controller.currentWeek.value;
+    final now = DateTime.now();
+
+    DateTime newStart = week.start.add(Duration(days: isNext ? 7 : -7));
+    if (newStart.month == now.month) {
+      DateTime newEnd = newStart.add(const Duration(days: 6));
+      controller.getEarnings(newStart.toIso8601String(), newEnd.toIso8601String());
+
+
+      controller.currentWeek.value = (start: newStart, end: newEnd);
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +84,6 @@ class _EarningsScreenState extends State<EarningsScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -65,7 +102,6 @@ class _EarningsScreenState extends State<EarningsScreen> {
                         ),
                         const SizedBox(height: 6),
                         CommonButton(
-
                           borderRadius: 3,
                           width: 90,
                           height: 30,
@@ -74,14 +110,11 @@ class _EarningsScreenState extends State<EarningsScreen> {
                           textColor: Colors.deepPurple,
                           borderColor: Colors.white,
                           onTap: () {
-
-                            Get.to(()=> WithdrawScreen());
+                            Get.to(() => WithdrawScreen());
                           },
                         ),
                       ],
                     ),
-
-
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -98,7 +131,6 @@ class _EarningsScreenState extends State<EarningsScreen> {
               ),
 
               const SizedBox(height: 20),
-
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -132,75 +164,99 @@ class _EarningsScreenState extends State<EarningsScreen> {
               Container(
                 height: 300,
                 padding: const EdgeInsets.all(12),
-
                 child: Column(
                   children: [
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
-                          Icons.arrow_back_ios,
-                          size: 16,
-                          color: Colors.black54,
+                        IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                            size: 16,
+                            color: Colors.black54,
+                          ),
+                          onPressed: () => _navigateWeek(false),
                         ),
-                        Column(
+                        Obx(() => Column(
                           children: [
                             Text(
-                              "July 21 - 27",
-                              style: CommonTextStyles.regular14,
+                              "${DateFormat('MMM d').format(controller.currentWeek.value.start)} "
+                                  "- ${DateFormat('d').format(controller.currentWeek.value.end)}",
                             ),
-                            Text("₹2,860", style: CommonTextStyles.medium16),
+                            Text("₹${controller.totalEarnings.value}", style: CommonTextStyles.medium16),
                           ],
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: Colors.black54,
+                        )),
+                        IconButton(
+                          icon: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Colors.black54,
+                          ),
+                          onPressed: () => _navigateWeek(true),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-
-
                     Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: List.generate(7, (index) {
-                          final heights = [
-                            120.0,
-                            150.0,
-                            140.0,
-                            200.0,
-                            160.0,
-                            80.0,
-                            130.0,
-                          ];
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Container(
-                                height: heights[index],
-                                width: 20,
-                                decoration: BoxDecoration(
-                                  color: Colors.deepPurple,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
+                      child: Obx(() => BarChart(
+                        BarChartData(
+                          alignment: BarChartAlignment.spaceAround,
+                          maxY: controller.earningsData.isNotEmpty
+                              ? (controller.earningsData.map((e) => e.amount ?? 0).reduce((a, b) => a > b ? a : b) * 1.1).toDouble()
+                              : 100,
+
+                          barTouchData: BarTouchData(enabled: false),
+                          titlesData: FlTitlesData(
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  final days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+                                  return Text(
+                                    value.toInt() < days.length ? days[value.toInt()] : '',
+                                    style: const TextStyle(color: Colors.black54, fontSize: 12),
+                                  );
+                                },
                               ),
-                              const SizedBox(height: 6),
-                              Text("SMTWTFS"[index]),
-                            ],
-                          );
-                        }),
-                      ),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            topTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            rightTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                          ),
+
+
+                          borderData: FlBorderData(show: false),
+                          gridData: FlGridData(show: false),
+                          barGroups: controller.earningsData.asMap().entries.map((entry) {
+                            int index = entry.key;
+                            Datum data = entry.value;
+                            return BarChartGroupData(
+                              x: index,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: (data.amount ?? 0).toDouble(),
+                                  color: Colors.deepPurple,
+                                  width: 20,
+                                  borderRadius: BorderRadius.circular(2),
+                                  backDrawRodData: BackgroundBarChartRodData(show: false),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      )),
                     ),
                   ],
                 ),
               ),
 
               const SizedBox(height: 20),
-
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -287,19 +343,17 @@ class _EarningsScreenState extends State<EarningsScreen> {
   }
 
   Widget _buildEarningsItem(
-    String service,
-    String date,
-    String earning,
-    bool isPaid,
-  ) {
+      String service,
+      String date,
+      String earning,
+      bool isPaid,
+      ) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 0),
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -311,16 +365,16 @@ class _EarningsScreenState extends State<EarningsScreen> {
               ),
             ],
           ),
-
-
           Column(
-
             children: [
               Text(earning, style: CommonTextStyles.medium14),
-              SizedBox(height: 5,),
+              SizedBox(height: 5),
               Container(
-                padding: EdgeInsets.fromLTRB(8,4,8,4),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color: CommonColors.green.withAlpha(25)),
+                padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: CommonColors.green.withAlpha(25),
+                ),
                 child: Text(
                   isPaid ? "Paid" : "Pending",
                   style: CommonTextStyles.regular12.copyWith(

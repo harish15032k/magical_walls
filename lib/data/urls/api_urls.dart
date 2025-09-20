@@ -6,4 +6,9 @@ class ApiUrls{
   static const String serviceList = '$_baseUrl/technician/getServices';
   static const String kycComplete = '$_baseUrl/technician/kycVerification';
   static const String kycStatus = '$_baseUrl/technician/kycStatus';
+  static const String profileGet = '$_baseUrl/technician/techProfile';
+  static const String earningsGet = '$_baseUrl/technician/weeklyEarnings';
+  static const String locationUpdate = '$_baseUrl/technician/updateLocation';
+  static const String getOrderList = '$_baseUrl/technicianHome';
+  static const String withDrawRequest = '$_baseUrl/technician/requestWithdrawal';
 }

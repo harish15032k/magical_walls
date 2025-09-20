@@ -46,6 +46,10 @@ dependencies:
   shared_preferences: ^2.5.3
   shimmer_animation: ^2.2.2
   intl: ^0.18.0
+  fl_chart: ^0.68.0
+  geolocator: ^14.0.2
+  google_maps_flutter: ^2.13.1
+  location: ^8.0.1
 
 
 

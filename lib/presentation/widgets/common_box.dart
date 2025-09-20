@@ -35,6 +35,7 @@ class CommonBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
         color: CommonColors.white,
         borderRadius: BorderRadius.circular(8),
@@ -48,7 +49,7 @@ class CommonBox extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(4.0),
               child: Text(
-                '#$jobId',
+                '#BKID $jobId',
                 style: CommonTextStyles.regular12.copyWith(
                   color: CommonColors.purple,
                 ),
