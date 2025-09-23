@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
+import 'package:magical_walls/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
 class HelpAndSupportScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class HelpAndSupportScreen extends StatefulWidget {
 
 class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
   final TextEditingController _messageController = TextEditingController();
-
+ProfileController controller = Get.put(ProfileController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,14 +74,18 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    CommonButton(
-                      text: "Send",
-                      backgroundColor: CommonColors.primaryColor,
-                      textColor: CommonColors.white,
-                      onTap: () {
-                        // Add send message logic here
-                        _messageController.clear();
-                      },
+                    Obx(()=>
+                  CommonButton(
+                    isLoading:controller.isLoading.value ,
+                        text: "Send",
+                        backgroundColor: CommonColors.primaryColor,
+                        textColor: CommonColors.white,
+                        onTap: () async{
+                      FocusScope.of(context).unfocus();
+                        await  controller.riseSupport(context, _messageController.text);
+                          _messageController.clear();
+                        },
+                      ),
                     ),
                   ],
                 ),

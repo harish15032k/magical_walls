@@ -11,4 +11,7 @@ class ApiUrls{
   static const String locationUpdate = '$_baseUrl/technician/updateLocation';
   static const String getOrderList = '$_baseUrl/technicianHome';
   static const String withDrawRequest = '$_baseUrl/technician/requestWithdrawal';
+  static const String updateToggle = '$_baseUrl/technician/availablityUpdate';
+  static const String riseSupport = '$_baseUrl/customerSupport';
+  static const String profileUpdate = '$_baseUrl/technician/updateTechnician';
 }

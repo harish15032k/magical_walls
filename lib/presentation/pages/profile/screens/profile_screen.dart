@@ -21,8 +21,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isAvailable = true;
   ProfileController controller = Get.put(ProfileController());
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -213,13 +217,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildAvailabilityItem() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _isAvailable = !_isAvailable;
-        });
-      },
-      child: Padding(
+    return Obx(
+          () => Padding(
         padding: const EdgeInsets.symmetric(vertical: 3.0),
         child: Row(
           children: [
@@ -231,25 +230,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(width: 12),
             Text("Availability", style: CommonTextStyles.regular16),
             const Spacer(),
-            Transform.scale(
-              scale: 0.9,
-              child: Switch(
-                value: _isAvailable,
-                onChanged: (value) {
-                  setState(() {
-                    _isAvailable = value;
-                  });
-                },
-                activeColor: Colors.green,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey[300],
-              ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Transform.scale(
+                  scale: 0.9,
+                  child: Switch(
+                    value: controller.isAvailable.value,
+                    onChanged: (value) {
+                      if (!controller.isLoadingToggle.value) {
+                        controller.updateToggle(context, value);
+                      }
+                    },
+                    activeColor: Colors.green,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey[300],
+                  ),
+                ),
+                if (controller.isLoadingToggle.value)
+                  Container(
+                    width: 40,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ],
         ),
       ),
     );
   }
+
+
 
   void _showLogoutPopup(BuildContext context) {
     showDialog(
@@ -298,6 +323,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       backgroundColor: CommonColors.primaryColor,
                       textColor: CommonColors.white,
                       onTap: () {
+                        controller.logOut();
                         Navigator.of(context).pop();
                       },
                     ),

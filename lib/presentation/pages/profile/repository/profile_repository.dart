@@ -9,4 +9,13 @@ class ProfileRepository{
     return ProfileRes.fromMap(res);
 
   }
+  updateToggle(Map<String,dynamic> request,String token)async{
+    final res = await http.post(ApiUrls.updateToggle, request,token: token);
+    return res;
+
+  }  riseSupport(Map<String,dynamic> request,String token)async{
+    final res = await http.post(ApiUrls.riseSupport, request,token: token);
+    return res;
+
+  }
 }

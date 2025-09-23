@@ -1,12 +1,14 @@
 import 'package:get/get.dart';
-import 'package:magical_walls/presentation/pages/Home/model/home_mode.dart';
+import 'package:magical_walls/presentation/pages/Home/model/home_mode.dart' as up;
 import 'package:magical_walls/presentation/pages/Home/repository/home_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../model/Completed_order_model.dart';
 class HomeController extends GetxController {
   var isLoading = false.obs;
 
-  var upcomingOrders = <Datum>[].obs;
-  var ongoingOrders = <Datum>[].obs;
+  var upcomingOrders = <up.Datum>[].obs;
+  var ongoingOrders = <up.Datum>[].obs;
   var completedOrders = <Datum>[].obs;
 
   HomeRepository repo = HomeRepository();
@@ -27,19 +29,21 @@ class HomeController extends GetxController {
       Map<String, dynamic> request = {"filter": filter};
       isLoading.value = true;
 
-      OrderListRes res = await repo.getOrderList(token, request);
+      if (filter == "completed") {
 
-      if (res.status == true) {
-        switch (filter) {
-          case "upcoming":
+        OrderCompletedRes res = await repo.getCompletedOrderList(token, request);
+        if (res.status == true) {
+          completedOrders.assignAll(res.data ?? []);
+        }
+      } else {
+
+        up.OrderUpcomingRes res = await repo.getUpcomingOrderList(token, request);
+        if (res.status == true) {
+          if (filter == "upcoming") {
             upcomingOrders.assignAll(res.data ?? []);
-            break;
-          case "ongoing":
+          } else if (filter == "ongoing") {
             ongoingOrders.assignAll(res.data ?? []);
-            break;
-          case "completed":
-            completedOrders.assignAll(res.data ?? []);
-            break;
+          }
         }
       }
     } finally {
@@ -47,4 +51,5 @@ class HomeController extends GetxController {
     }
   }
 }
+
 

@@ -8,7 +8,8 @@ import 'package:magical_walls/presentation/widgets/common_box.dart';
 import 'package:magical_walls/presentation/widgets/shimmer.dart';
 
 import '../../../widgets/common_button.dart';
-import '../model/home_mode.dart';
+ import '../model/home_mode.dart';
+import '../model/Completed_order_model.dart' as co;
 import 'order_viewdetails.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -67,41 +68,103 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               Get.to(
                     () => JobDetailsScreen(job: {
-                  'id': job.id.toString(),
-                  'type': job.service?.name ?? '',
-                  'customer': job.user?.name ?? '',
-                  'date': job.startDate?.toString() ?? '',
+                  'id': job.bookingId.toString(),
+                  'type': job.serviceType ?? '',
+                  'customer': job.customerName?? '',
+                  'date': job.bookingDate?.toString() ?? '',
                   'timeSlot': job.timeSlot?.toString() ?? '',
-                  'address': job.address?.addressLine1 ?? '',
+                  'address': job.address?.address ?? '',
                 }),
                 transition: Transition.zoom,
               );
             },
             child: CommonBox(
               tab: emptyMessage,
-              jobId: job.id?.toString() ?? '',
-              jobType: job.service?.name ?? '',
-              customerName: job.user?.name ?? '',
-              date: job.startDate != null
-                  ? "${job.startDate!.day}-${job.startDate!.month}-${job.startDate!.year}"
+              jobId: job.bookingId?.toString() ?? '',
+              jobType: job.serviceType ?? '',
+              customerName: job.customerName ?? '',
+              date: job.bookingDate != null
+                  ? job.bookingDate.toString()
                   : '',
               timeSlot: job.timeSlot?.toString() ?? '',
-              address: job.address?.addressLine1 ?? '',
+              address: job.address?.address ?? '',
               onAccept: () => Get.to(
                     () => JobDetailsScreen(
-                  job: {
-                    'id': job.id.toString(),
-                    'type': job.service?.name ?? '',
-                    'customer': job.user?.name ?? '',
-                    'date': job.startDate?.toString() ?? '',
-                    'timeSlot': job.timeSlot?.toString() ?? '',
-                    'address': job.address?.addressLine1 ?? '',
-                  },
+                      job: {
+                        'id': job.bookingId.toString(),
+                        'type': job.serviceType ?? '',
+                        'customer': job.customerName?? '',
+                        'date': job.bookingDate?.toString() ?? '',
+                        'timeSlot': job.timeSlot?.toString() ?? '',
+                        'address': job.address?.address ?? '',
+                      },
                   isaccept: true,
                 ),
                 transition: Transition.zoom,
               ),
-              onReject: () => debugPrint("Rejected: ${job.id}"),
+              onReject: () => debugPrint("Rejected: ${job.bookingId}"),
+            ),
+          );
+        },
+      );
+    });
+  }
+  Widget _buildJobListCompleted(List<co.Datum> jobs, String emptyMessage) {
+    return Obx(() {
+      if (homeController.isLoading.value) {
+        return ShimmerWidgets.shimmerBox(count: 4, height: 200);
+      }
+
+      if (jobs.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/review_icon.png', width: 100),
+              const SizedBox(height: 16),
+              Text(
+                emptyMessage,
+                style: CommonTextStyles.medium20.copyWith(
+                  color: CommonColors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        );
+      }
+
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: jobs.length,
+        itemBuilder: (context, index) {
+          final job = jobs[index];
+          return GestureDetector(
+            onTap: () {
+              // Get.to(
+              //       () => JobDetailsScreen(job: {
+              //     'id': job.bookingId.toString(),
+              //     'type': job.serviceType ?? '',
+              //     'customer': job.customerName?? '',
+              //     'date': job.bookingDate?.toString() ?? '',
+              //     'timeSlot': job.timeSlot?.toString() ?? '',
+              //     'address': job.address?.address ?? '',
+              //   }),
+              //   transition: Transition.zoom,
+              // );
+            },
+            child: CommonBox(
+              tab: emptyMessage,
+              jobId: job.bookingId?.toString() ?? '',
+              jobType: job.serviceType ?? '',
+              customerName: job.timeSlot ?? '',
+              date: job.bookingDate != null
+                  ? job.bookingDate.toString()
+                  : '',
+              timeSlot: job.timeSlot?.toString() ?? '',
+              address: job.timeSlot ?? '',
+
+
             ),
           );
         },
@@ -215,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildJobList(homeController.upcomingOrders, "No upcoming jobs yet"),
                 _buildJobList(homeController.ongoingOrders, "No ongoing jobs yet"),
-                _buildJobList(homeController.completedOrders, "No completed jobs yet"),
+                _buildJobListCompleted(homeController.completedOrders, "No completed jobs yet"),
               ],
             ),
           ),
