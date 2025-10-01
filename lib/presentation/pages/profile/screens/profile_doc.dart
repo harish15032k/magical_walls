@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
+import 'package:magical_walls/presentation/pages/profile/model/profile_model.dart';
 
 class DocumentsScreen extends StatelessWidget {
-  const DocumentsScreen({super.key});
+  Data data;
+   DocumentsScreen({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -45,13 +47,13 @@ class DocumentsScreen extends StatelessWidget {
                   children: [
                     _buildDocumentSection(
                       title: "Aadhaar Card",
-                      imagePath: 'assets/images/ac.png', 
+                      imagePath: data.aadharCard??'',
                       isVerified: true,
                     ),
                     const SizedBox(height: 15),
                     _buildDocumentSection(
                       title: "Pan Card",
-                      imagePath: 'assets/images/ac.png',
+                      imagePath:data.panCard??'',
                       isVerified: true,
                     ),
                   ],
@@ -92,7 +94,7 @@ class DocumentsScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset('assets/images/tick.png', width: 12),
+                    Image.network(imagePath, width: 12),
                     const SizedBox(width: 3),
                     Text(
                       "Verified",

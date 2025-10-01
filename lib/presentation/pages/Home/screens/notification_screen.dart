@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
+import 'package:intl/intl.dart';
+import 'package:magical_walls/presentation/pages/Home/controller/home_controller.dart';
+import 'package:magical_walls/presentation/widgets/shimmer.dart';
+
 
 class NotificationScreen extends StatelessWidget {
+  final HomeController controller = Get.put(HomeController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,37 +38,51 @@ class NotificationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Expanded(
-                child: ListView(
-                  children: [
-                    _buildNotificationCard(
-                      iconPath: 'assets/images/noti.png',
-                      title: 'New Booking Assigned',
-                      message: 'You\'ve been assigned a new job',
-                      details: [
-                        'Service: AC Repair - Gas Refill',
-                        'Time: Today, 4:00 PM',
-                        'Booking ID: #MW127',
-                      ],
-                      timestamp: 'July 20, 2025 | 10:35 AM',
-                    ),
-                    _buildNotificationCard(
-                      iconPath: 'assets/images/noti.png',
-                      title: 'Upcoming Job Reminder',
-                      message: 'Your next job is in 1 hour.',
-                      details: [
-                        'Service: Full Home Painting',
-                        'Location: Anna Nagar, Chennai',
-                      ],
-                      timestamp: 'July 17, 2025 | 07:36 AM',
-                    ),
-                    _buildNotificationCard(
-                      iconPath: 'assets/images/noti.png',
-                      title: 'Payment Update',
-                      message: '₹899 has been credited to your account for booking #UC7519.',
-                      timestamp: 'July 11, 2025 | 10:35 AM',
-                    ),
-                  ],
-                ),
+                child: Obx(() {
+                  if (controller.isLoading.value) {
+                    return  ShimmerWidgets.shimmerBox(count: 10,height: 60);
+                  }
+                  if (controller.notifications.isEmpty) {
+                    return const Center(child: Text("No notifications found"));
+                  }
+                  return ListView.builder(
+                    itemCount: controller.notifications.length,
+                    itemBuilder: (context, index) {
+                      final item = controller.notifications[index];
+                      final data = item.data;
+
+
+                      final formattedTime = item.createdAt != null
+                          ? DateFormat("MMMM d, yyyy | hh:mm a")
+                          .format(item.createdAt!)
+                          : "";
+
+
+                      List<String>? details;
+                      if (data != null) {
+                        details = [];
+                        if (data.service != null) {
+                          details.add("Service: ${data.service}");
+                        }
+                        if (data.datetime != null) {
+                          details.add("Time: ${data.datetime}");
+                        }
+                        if (data.location != null) {
+                          details.add(
+                              "Location: ${data.location!.addressLine1 ?? ''} ${data.location!.city ?? ''}");
+                        }
+                      }
+
+                      return _buildNotificationCard(
+                        iconPath: 'assets/images/noti.png',
+                        title: item.title ?? '',
+                        message: item.message ?? '',
+                        details: details,
+                        timestamp: formattedTime,
+                      );
+                    },
+                  );
+                }),
               ),
             ],
           ),
@@ -101,20 +121,18 @@ class NotificationScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        title,
-                        style: CommonTextStyles.medium18,
-                      ),
+                      Text(title, style: CommonTextStyles.medium18),
                       Text(
                         message,
-                        style: CommonTextStyles.regular14.copyWith(color: CommonColors.secondary),
+                        style: CommonTextStyles.regular14
+                            .copyWith(color: CommonColors.secondary),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            if (details != null) ...[
+            if (details != null && details.isNotEmpty) ...[
               const SizedBox(height: 8),
               ...details.map((detail) {
                 final parts = detail.split(': ');
@@ -125,15 +143,14 @@ class NotificationScreen extends StatelessWidget {
                       children: [
                         Text(
                           '${parts[0]}: ',
-                          style: CommonTextStyles.regular14.copyWith(
-                            color: CommonColors.secondary,
-
-                          ),
+                          style: CommonTextStyles.regular14
+                              .copyWith(color: CommonColors.secondary),
                         ),
                         Expanded(
                           child: Text(
                             parts[1],
-                            style: CommonTextStyles.regular14.copyWith(color: CommonColors.black),
+                            style: CommonTextStyles.regular14
+                                .copyWith(color: CommonColors.black),
                           ),
                         ),
                       ],
@@ -142,19 +159,15 @@ class NotificationScreen extends StatelessWidget {
                 }
                 return Padding(
                   padding: const EdgeInsets.only(top: 4.0),
-                  child: Text(
-                    detail,
-                    style: CommonTextStyles.regular14,
-                  ),
+                  child: Text(detail, style: CommonTextStyles.regular14),
                 );
-              }),
+              }).toList(),
             ],
             const SizedBox(height: 8),
             Text(
               timestamp,
-              style: CommonTextStyles.regular12.copyWith(
-                color: CommonColors.secondary,
-              ),
+              style: CommonTextStyles.regular12
+                  .copyWith(color: CommonColors.secondary),
             ),
           ],
         ),

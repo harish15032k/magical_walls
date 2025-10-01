@@ -5,13 +5,17 @@ import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/core/utils/utils.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/service_add.dart';
+import 'package:magical_walls/presentation/pages/Home/controller/home_controller.dart';
 import 'package:magical_walls/presentation/pages/Home/screens/selfie_screen.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
 import 'package:pinput/pinput.dart';
 
 class StartJobOtp extends StatefulWidget {
-  const StartJobOtp({super.key});
+ final dynamic id;
+ bool? isEndJob;
+   StartJobOtp( {super.key,required this.id,this.isEndJob=false
+  });
 
   @override
   State<StartJobOtp> createState() => _StartJobOtpState();
@@ -29,6 +33,8 @@ class _StartJobOtpState extends State<StartJobOtp> {
     });
   }
 
+  HomeController controller = Get.put(HomeController());
+
   @override
   void dispose() {
     _otpFocus.dispose();
@@ -44,7 +50,7 @@ class _StartJobOtpState extends State<StartJobOtp> {
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 82),
         children: [
           Text(
-            'Verify OTP to Start Job',
+         widget.isEndJob==true? 'Verify OTP to Complete Job':  'Verify OTP to Start Job',
             style: CommonTextStyles.medium24.copyWith(
               color: CommonColors.black,
             ),
@@ -113,24 +119,25 @@ class _StartJobOtpState extends State<StartJobOtp> {
 
           Column(
             children: [
-              CommonButton(
-                backgroundColor: CommonColors.primaryColor,
-                textColor: CommonColors.white,
-                text: 'Verify OTP',
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                  if (pin.length != 4) {
-                    showCustomSnackBar(
-                      context: context,
-                      errorMessage: "Pin should be 4 digit",
-                    );
-                  } else {
-                    Get.to(
-                      () => SelfieScreen(),
-                      transition: Transition.rightToLeft,
-                    );
-                  }
-                },
+              Obx(
+                () => CommonButton(
+                  isLoading: controller.isLoading.value,
+                  backgroundColor: CommonColors.primaryColor,
+                  textColor: CommonColors.white,
+                  text: 'Verify OTP',
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                    if (pin.length != 4) {
+                      showCustomSnackBar(
+                        context: context,
+                        errorMessage: "Pin should be 4 digit",
+                      );
+                    } else {
+                      controller.verifyStarJobOtp(widget.id,pin,widget.isEndJob);
+
+                    }
+                  },
+                ),
               ),
               SizedBox(height: 20),
               Text(

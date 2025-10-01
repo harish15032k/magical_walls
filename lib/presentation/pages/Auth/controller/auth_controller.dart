@@ -195,9 +195,11 @@ class AuthController extends GetxController {
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(responseBody.body);
         if (jsonResponse['status'] == true) {
+          debugPrint("🎉 KYC Success Log => Request: ${request.fields}, StatusCode: ${response.statusCode}, Response: ${responseBody.body}");
           await prefs.setInt('isKycCompleted', 1);
           Get.offAll(() => ProfileUnderReview(), transition: Transition.rightToLeft);
           showCustomSnackBar(context: context, errorMessage: jsonResponse['message'] ?? 'KYC submission Completed');
+
         } else {
           showCustomSnackBar(context: context, errorMessage: jsonResponse['message'] ?? 'KYC submission failed');
         }

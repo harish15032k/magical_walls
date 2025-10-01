@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/core/utils/utils.dart';
+import 'package:magical_walls/presentation/pages/Auth/screens/login.dart';
 import 'package:magical_walls/presentation/pages/profile/repository/profile_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +12,11 @@ import '../model/profile_model.dart';
 class ProfileController extends GetxController {
   ProfileRepository repo = ProfileRepository();
   var isAvailable = false.obs;
+  final TextEditingController dob = TextEditingController();
+  final TextEditingController name = TextEditingController();
+  final TextEditingController mobile = TextEditingController();
+  final TextEditingController Address = TextEditingController();
+  File? pickedProfileImage;
   @override
   void onInit() {
     // TODO: implement onInit
@@ -16,7 +24,6 @@ class ProfileController extends GetxController {
 
     getProfile().then((_) {
       if (profileData.isNotEmpty) {
-
         isAvailable.value = profileData.first.status == 'available';
       }
     });
@@ -30,13 +37,11 @@ class ProfileController extends GetxController {
   var isLoading = false.obs;
   var isLoadingToggle = false.obs;
   var profileData = <Data>[].obs;
-  var token =
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL3ZlcmlmeUNvZGUiLCJpYXQiOjE3NTU1ODExNTksImV4cCI6MTc4NzExNzE1OSwibmJmIjoxNzU1NTgxMTU5LCJqdGkiOiJtR0xxSmpSTE9vejJnbDhxIiwic3ViIjoiMTUiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.YPuq5f81tjzH-KJveWU9dujFduT4ALJpQ3uaY83H53E';
 
   getProfile() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      // var token = prefs.getString('token');
+      var token = prefs.getString('token');
       isLoading.value = true;
       ProfileRes res = await repo.getProfile(token!);
       if (res.status == true) {
@@ -50,7 +55,7 @@ class ProfileController extends GetxController {
   updateToggle(BuildContext context, bool status) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      // var token = prefs.getString('token');
+      var token = prefs.getString('token');
       isLoadingToggle.value = true;
 
       Map<String, dynamic> request = {'available': status};
@@ -70,7 +75,7 @@ class ProfileController extends GetxController {
   riseSupport(BuildContext context, String message) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      // var token = prefs.getString('token');
+      var token = prefs.getString('token');
       isLoading.value = true;
 
       Map<String, dynamic> request = {'message': message, 'subject': 'support'};
@@ -88,8 +93,39 @@ class ProfileController extends GetxController {
       isLoading.value = false;
     }
   }
-  logOut()async{
+
+  logOut() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.remove('isLogin');
+    Get.offAll(LoginScreen());
+  }
+
+  updateProfile(BuildContext context) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString('token');
+      isLoading.value = true;
+
+      Map<String, dynamic> request = {
+        'name': name.text,
+        'dob': dob.text,
+        'email': Address.text,
+        'phone': mobile.text,
+        'image': pickedProfileImage!.path!,
+      };
+      final res = await repo.updateProfile(request, token!);
+      if (res['status'] == true) {
+        showCustomSnackBar(context: context, errorMessage: res['message']);
+        Get.back();
+        dob.clear();
+        Address.clear();
+        name.clear();
+        mobile.clear();
+      } else {
+        showCustomSnackBar(context: context, errorMessage: res['message']);
+      }
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

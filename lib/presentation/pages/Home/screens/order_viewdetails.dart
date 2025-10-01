@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:magical_walls/presentation/pages/Home/controller/home_controller.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text.dart';
 import '../../../widgets/common_button.dart';
 
-
 class JobDetailsScreen extends StatefulWidget {
-  final Map<String, String?> job;
-  late  bool isaccept;
+  final Map<String, dynamic?> job;
+  late bool isaccept;
 
-   JobDetailsScreen({super.key, required this.job,this.isaccept=false});
+  JobDetailsScreen({super.key, required this.job, this.isaccept = false});
 
   @override
   State<JobDetailsScreen> createState() => _JobDetailsScreenState();
 }
 
 class _JobDetailsScreenState extends State<JobDetailsScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
+  HomeController homeController = Get.put(HomeController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,7 +123,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         'Name:',
                         widget.job['customer'] ?? '',
                         'Phone Number:',
-                        '+91 9384712736',
+                        widget.job['phone'] ?? '',
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -141,17 +147,23 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         'Task Name:',
                         'Gas Refill',
                         'Duration:',
-                        '1.5 – 2 hours',
+                        widget.job['duration'],
                       ),
                       const SizedBox(height: 12),
                       _twoColumnRow(
                         'Tools Required:',
-                        'AC Pressure Gauge, Gas Refill Kit',
+                        (widget.job['tools'] as List<dynamic>?)?.join(", ") ??
+                            '',
                         'Assigned Technician:',
-                        'Ramesh Kumar (you)',
+                        '${widget.job['assigned_technician']}(you)',
                       ),
                       const SizedBox(height: 12),
-                      _twoColumnRow('Service Price:', '₹1,499', '', ''),
+                      _twoColumnRow(
+                        'Service Price:',
+                        '₹${widget.job['service_price']}',
+                        '',
+                        '',
+                      ),
                       const SizedBox(height: 12),
                       Text(
                         'Please reach the customer’s location 10–15 minutes before the time slot.',
@@ -161,14 +173,19 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                       widget.isaccept==false
+                      widget.isaccept == false
                           ? CommonButton(
                               backgroundColor: CommonColors.primaryColor,
                               textColor: CommonColors.white,
                               text: 'Accept',
                               onTap: () {
+                                homeController.acceptService(
+                                  widget.job['id'],
+                                  'accept',
+                                  context,
+                                );
                                 setState(() {
-                            widget.isaccept=true;
+                                  widget.isaccept = true;
                                 });
                               },
                             )
@@ -187,14 +204,20 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
-                                  child: CommonButton(
-                                    onTap: (){
-                                      // Get.to(()=>StartJobOtp(),transition:Transition.topLevel);
-                                    },
-                                    backgroundColor: CommonColors.primaryColor,
-                                    textColor: CommonColors.white,
+                                  child: Obx(
+                                    () => CommonButton(
+                                      isLoading: homeController.isLoading.value,
+                                      onTap: () {
+                                        homeController.getStartJobOtp(
+                                          widget.job['id'],
+                                        );
+                                      },
+                                      backgroundColor:
+                                          CommonColors.primaryColor,
+                                      textColor: CommonColors.white,
 
-                                    text: 'Start Job',
+                                      text: 'Start Job',
+                                    ),
                                   ),
                                 ),
                               ],
@@ -211,10 +234,10 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
   }
 
   Widget _twoColumnRow(
-    String leftLabel,
-    String leftValue,
-    String rightLabel,
-    String rightValue,
+    dynamic leftLabel,
+    dynamic leftValue,
+    dynamic rightLabel,
+    dynamic rightValue,
   ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

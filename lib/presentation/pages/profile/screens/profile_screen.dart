@@ -23,10 +23,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   ProfileController controller = Get.put(ProfileController());
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,13 +48,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Obx(
             () => controller.isLoading.value
                 ? ShimmerWidgets.profileShimmer()
-                :controller.profileData.isEmpty
-                ?  Center(
-              child: Text(
-                "No profile data available",
-                style: CommonTextStyles.regular16,
-              ),
-            )
+                : controller.profileData.isEmpty
+                ? Center(
+                    child: Text(
+                      "No profile data available",
+                      style: CommonTextStyles.regular16,
+                    ),
+                  )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -71,32 +67,89 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundImage: AssetImage(
-                              controller.profileData.first.technicianImage??'assets/images/man.png',
-                            ),
+                          Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              CircleAvatar(
+                                radius: 30,
+                                backgroundColor: CommonColors.grey,
+                                backgroundImage: (controller.profileData.isNotEmpty &&
+                                    controller.profileData.first.technicianImage != null &&
+                                    controller.profileData.first.technicianImage!.isNotEmpty)
+                                    ? NetworkImage(controller.profileData.first.technicianImage!)
+                                    : null,
+                                child: (controller.profileData.isEmpty ||
+                                    controller.profileData.first.technicianImage == null ||
+                                    controller.profileData.first.technicianImage!.isEmpty)
+                                    ? Text(
+                                  controller.profileData.isNotEmpty &&
+                                      (controller.profileData.first.name?.isNotEmpty ?? false)
+                                      ? controller.profileData.first.name!
+                                      .substring(
+                                    0,
+                                    controller.profileData.first.name!.length >= 2 ? 2 : 1,
+                                  )
+                                      .toUpperCase()
+                                      : "NA",
+                                  style: CommonTextStyles.medium16.copyWith(
+                                    color: CommonColors.white,
+                                  ),
+                                )
+                                    : null,
+                              ),
+                              Positioned(
+                                bottom: -8,
+                                left: 0,
+                                right: 0,
+                                child: controller.profileData.first.rating == null ||
+                                    controller.profileData.first.rating!.isEmpty
+                                    ? const SizedBox.shrink()
+                                    : Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade200,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.star, color: Colors.orange, size: 18),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        controller.profileData.first.rating!,
+                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
+                                  ),
+                                )
+
+                              ),
+                            ],
                           ),
+
+
                           const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                controller.profileData.first.name??'Technician',
+                                controller.profileData.first.name ??
+                                    'Technician',
                                 style: CommonTextStyles.medium22,
                               ),
                               Row(
                                 children: [
-                                  if(controller.profileData.first.service != null)   ... controller.profileData.first.service!.map((e){
-                                    return  Text(
-                                      e,
-                                      style: CommonTextStyles.regular14.copyWith(
-                                        color: CommonColors.secondary,
-                                      ),
-                                    );
-                                  })
-
-
+                                  if (controller.profileData.first.service !=
+                                      null)
+                                    ...controller.profileData.first.service!
+                                        .map((e) {
+                                          return Text(
+                                            e,
+                                            style: CommonTextStyles.regular14
+                                                .copyWith(
+                                                  color: CommonColors.secondary,
+                                                ),
+                                          );
+                                        }),
                                 ],
                               ),
                             ],
@@ -106,11 +159,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onTap: () {
                               Get.to(
                                 () => ProfileEdit(
-
+                                  data: controller.profileData.first,
                                 ),
-
                                 transition: Transition.rightToLeft,
-                              );
+                              )?.then((value) {
+                                controller.getProfile();
+                              });
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -141,7 +195,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: "Professional Info",
                         onTap: () {
                           Get.to(
-                            () => PersonalInfo(),
+                            () => PersonalInfo(
+                              data: controller.profileData.first,
+                            ),
                             transition: Transition.rightToLeft,
                           );
                         },
@@ -151,7 +207,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: "Documents",
                         onTap: () {
                           Get.to(
-                            () => DocumentsScreen(),
+                            () => DocumentsScreen(
+                              data: controller.profileData.first,
+                            ),
                             transition: Transition.rightToLeft,
                           );
                         },
@@ -161,7 +219,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: "Bank Details",
                         onTap: () {
                           Get.to(
-                            () => BankDetailsScreen(),
+                            () => BankDetailsScreen(
+                              data: controller.profileData.first,
+                            ),
                             transition: Transition.rightToLeft,
                           );
                         },
@@ -218,7 +278,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildAvailabilityItem() {
     return Obx(
-          () => Padding(
+      () => Padding(
         padding: const EdgeInsets.symmetric(vertical: 3.0),
         child: Row(
           children: [
@@ -273,8 +333,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-
-
 
   void _showLogoutPopup(BuildContext context) {
     showDialog(

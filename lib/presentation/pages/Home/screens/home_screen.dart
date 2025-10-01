@@ -4,11 +4,12 @@ import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/presentation/pages/Home/controller/home_controller.dart';
 import 'package:magical_walls/presentation/pages/Home/screens/notification_screen.dart';
+import 'package:magical_walls/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:magical_walls/presentation/widgets/common_box.dart';
 import 'package:magical_walls/presentation/widgets/shimmer.dart';
 
 import '../../../widgets/common_button.dart';
- import '../model/home_mode.dart';
+import '../model/home_mode.dart';
 import '../model/Completed_order_model.dart' as co;
 import 'order_viewdetails.dart';
 
@@ -23,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HomeController homeController = Get.put(HomeController());
+  final ProfileController profileController = Get.put(ProfileController());
 
   int selectedTab = 0;
 
@@ -30,8 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     selectedTab = widget.initialindex ?? 0;
-
-
+    profileController.getProfile();
   }
 
   Widget _buildJobList(List<Datum> jobs, String emptyMessage) {
@@ -67,48 +68,87 @@ class _HomeScreenState extends State<HomeScreen> {
           return GestureDetector(
             onTap: () {
               Get.to(
-                    () => JobDetailsScreen(job: {
-                  'id': job.bookingId.toString(),
-                  'type': job.serviceType ?? '',
-                  'customer': job.customerName?? '',
-                  'date': job.bookingDate?.toString() ?? '',
-                  'timeSlot': job.timeSlot?.toString() ?? '',
-                  'address': job.address?.address ?? '',
-                }),
+                () => JobDetailsScreen(
+                  job: {
+                    'id': job.bookingId.toString(),
+                    'type': job.serviceType ?? '',
+                    'customer': job.customerName ?? '',
+                    'date': job.bookingDate?.toString() ?? '',
+                    'timeSlot': job.timeSlot?.toString() ?? '',
+                    'address': job.address?.address ?? '',
+                    'phone': job.customerPhoneNumber ?? '',
+                    'duration': job.duration ?? '',
+                    'tools': job.toolsRequired ?? [],
+                    'service_price': job.servicePrice ?? '',
+                    'assigned_technician': job.assignedTechnician ?? '',
+                  },
+                ),
                 transition: Transition.zoom,
               );
             },
-            child: CommonBox(
-              tab: emptyMessage,
-              jobId: job.bookingId?.toString() ?? '',
-              jobType: job.serviceType ?? '',
-              customerName: job.customerName ?? '',
-              date: job.bookingDate != null
-                  ? job.bookingDate.toString()
-                  : '',
-              timeSlot: job.timeSlot?.toString() ?? '',
-              address: job.address?.address ?? '',
-              onAccept: () => Get.to(
+            child: Obx(
+              () => CommonBox(
+                tab: emptyMessage,
+                jobId: job.bookingId?.toString() ?? '',
+                jobType: job.serviceType ?? '',
+                customerName: job.customerName ?? '',
+                date: job.bookingDate != null ? job.bookingDate.toString() : '',
+                timeSlot: job.timeSlot?.toString() ?? '',
+                address: job.address?.address ?? '',
+                isLoadingAccept:
+                    homeController
+                        .loadingAcceptMap[job.bookingId.toString()]
+                        ?.value ??
+                    false,
+                isLoadingReject:
+                    homeController
+                        .loadingRejectMap[job.bookingId.toString()]
+                        ?.value ??
+                    false,
+                onAccept: () async {
+                  homeController.acceptService(
+                    job.bookingId,
+                    'accept',
+                    context,
+                    index: index,
+                  );
+
+                  await Get.to(
                     () => JobDetailsScreen(
                       job: {
                         'id': job.bookingId.toString(),
                         'type': job.serviceType ?? '',
-                        'customer': job.customerName?? '',
+                        'customer': job.customerName ?? '',
                         'date': job.bookingDate?.toString() ?? '',
                         'timeSlot': job.timeSlot?.toString() ?? '',
                         'address': job.address?.address ?? '',
+                        'phone': job.customerPhoneNumber ?? '',
+                        'duration': job.duration ?? '',
+                        'tools': job.toolsRequired ?? [],
+                        'service_price': job.servicePrice ?? '',
+                        'assigned_technician': job.assignedTechnician ?? '',
                       },
-                  isaccept: true,
-                ),
-                transition: Transition.zoom,
+                      isaccept: true,
+                    ),
+                    transition: Transition.zoom,
+                  );
+                },
+                onReject: () {
+                  homeController.acceptService(
+                    job.bookingId,
+                    'reject',
+                    context,
+                    index: index,
+                  );
+                },
               ),
-              onReject: () => debugPrint("Rejected: ${job.bookingId}"),
             ),
           );
         },
       );
     });
   }
+
   Widget _buildJobListCompleted(List<co.Datum> jobs, String emptyMessage) {
     return Obx(() {
       if (homeController.isLoading.value) {
@@ -158,20 +198,15 @@ class _HomeScreenState extends State<HomeScreen> {
               jobId: job.bookingId?.toString() ?? '',
               jobType: job.serviceType ?? '',
               customerName: job.timeSlot ?? '',
-              date: job.bookingDate != null
-                  ? job.bookingDate.toString()
-                  : '',
+              date: job.bookingDate != null ? job.bookingDate.toString() : '',
               timeSlot: job.timeSlot?.toString() ?? '',
               address: job.timeSlot ?? '',
-
-
             ),
           );
         },
       );
     });
   }
-
 
   Widget _buildTab(String title, int index) {
     final isSelected = selectedTab == index;
@@ -207,29 +242,62 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: CommonColors.white,
       body: Column(
         children: [
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 15,
-                  backgroundColor: CommonColors.grey,
-                  child: Text(
-                    'H',
-                    style: CommonTextStyles.medium16.copyWith(
-                      color: CommonColors.white,
-                    ),
+                Obx(() {
+                  if (profileController.profileData.isEmpty ||
+                      profileController.profileData.first.technicianImage == null ||
+                      profileController.profileData.first.technicianImage!.isEmpty) {
+
+                    final name = profileController.profileData.isNotEmpty
+                        ? profileController.profileData.first.name ?? "?"
+                        : "?";
+                    return CircleAvatar(
+                      radius: 15,
+                      backgroundColor: CommonColors.grey,
+                      child: Text(
+                        name.isNotEmpty ? name.substring(0, 1).toUpperCase() : "?",
+                        style: CommonTextStyles.medium16.copyWith(
+                          color: CommonColors.white,
+                        ),
+                      ),
+                    );
+                  } else {
+
+                    return CircleAvatar(
+                      radius: 15,
+                      backgroundColor: CommonColors.grey,
+                      backgroundImage: NetworkImage(
+                        profileController.profileData.first.technicianImage!,
+                      ),
+                    );
+                  }
+                }),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      showNewServiceRequestPopup(context);
+                    },
+                    child: Obx(() {
+                      if (profileController.profileData.isEmpty) {
+                        return Text(
+                          'Hi, !',
+                          style: CommonTextStyles.medium16,
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      } else {
+                        return Text(
+                          'Hi, ${profileController.profileData.first.name ?? ''} !',
+                          style: CommonTextStyles.medium16,
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      }
+                    }),
                   ),
                 ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: () {
-                    showNewServiceRequestPopup(context);
-                  },
-                  child: Text('Hi, Ramesh!', style: CommonTextStyles.medium16),
-                ),
-                const Spacer(),
                 GestureDetector(
                   onTap: () {
                     Get.to(
@@ -244,8 +312,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-          ),
 
+          ),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -271,18 +339,25 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-
           Expanded(
             child: IndexedStack(
               index: selectedTab,
               children: [
-                _buildJobList(homeController.upcomingOrders, "No upcoming jobs yet"),
-                _buildJobList(homeController.ongoingOrders, "No ongoing jobs yet"),
-                _buildJobListCompleted(homeController.completedOrders, "No completed jobs yet"),
+                _buildJobList(
+                  homeController.upcomingOrders,
+                  "No upcoming jobs yet",
+                ),
+                _buildJobList(
+                  homeController.ongoingOrders,
+                  "No ongoing jobs yet",
+                ),
+                _buildJobListCompleted(
+                  homeController.completedOrders,
+                  "No completed jobs yet",
+                ),
               ],
             ),
           ),
-
         ],
       ),
     );
@@ -314,8 +389,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('New Service Request',
-                        style: CommonTextStyles.medium22),
+                    Text(
+                      'New Service Request',
+                      style: CommonTextStyles.medium22,
+                    ),
                     const SizedBox(height: 3),
                     Text(
                       'You will got a new job nearby.',
@@ -350,47 +427,63 @@ class _HomeScreenState extends State<HomeScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Customer',
-                                style: CommonTextStyles.regular14.copyWith(
-                                  color: CommonColors.secondary,
-                                )),
-                            Text('Ravi Kumar',
-                                style: CommonTextStyles.medium14),
+                            Text(
+                              'Customer',
+                              style: CommonTextStyles.regular14.copyWith(
+                                color: CommonColors.secondary,
+                              ),
+                            ),
+                            Text(
+                              'Ravi Kumar',
+                              style: CommonTextStyles.medium14,
+                            ),
                           ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Date',
-                                style: CommonTextStyles.regular14.copyWith(
-                                  color: CommonColors.secondary,
-                                )),
-                            Text('25 July 2025',
-                                style: CommonTextStyles.medium14),
+                            Text(
+                              'Date',
+                              style: CommonTextStyles.regular14.copyWith(
+                                color: CommonColors.secondary,
+                              ),
+                            ),
+                            Text(
+                              '25 July 2025',
+                              style: CommonTextStyles.medium14,
+                            ),
                           ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Time Slot',
-                                style: CommonTextStyles.regular14.copyWith(
-                                  color: CommonColors.secondary,
-                                )),
-                            Text('10 AM – 12 PM',
-                                style: CommonTextStyles.regular14),
+                            Text(
+                              'Time Slot',
+                              style: CommonTextStyles.regular14.copyWith(
+                                color: CommonColors.secondary,
+                              ),
+                            ),
+                            Text(
+                              '10 AM – 12 PM',
+                              style: CommonTextStyles.regular14,
+                            ),
                           ],
                         ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     const SizedBox(height: 8),
-                    Text('Address',
-                        style: CommonTextStyles.regular14.copyWith(
-                          color: CommonColors.secondary,
-                        )),
+                    Text(
+                      'Address',
+                      style: CommonTextStyles.regular14.copyWith(
+                        color: CommonColors.secondary,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text("Flat 202, Lotus Apartments, Chennai",
-                        style: CommonTextStyles.medium14),
+                    Text(
+                      "Flat 202, Lotus Apartments, Chennai",
+                      style: CommonTextStyles.medium14,
+                    ),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,

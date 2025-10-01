@@ -17,6 +17,8 @@ class CommonBox extends StatelessWidget {
   final String address;
   final VoidCallback? onAccept;
   final VoidCallback? onReject;
+  final bool? isLoadingAccept;
+  final bool? isLoadingReject;
 
   const CommonBox({
     super.key,
@@ -29,6 +31,8 @@ class CommonBox extends StatelessWidget {
     this.onAccept,
     this.onReject,
     this.tab,
+    this.isLoadingAccept,
+    this.isLoadingReject,
   });
 
   @override
@@ -121,7 +125,7 @@ class CommonBox extends StatelessWidget {
           (tab == 'ongoing' || tab == 'completed')
               ? CommonButton(
             onTap: (){
-              tab=='ongoing'?Get.to(()=>MarkAsCompleted()):Get.to(()=>CompletedJobScreen());
+              tab=='ongoing'?Get.to(()=>MarkAsCompleted(jobType: jobType,id: jobId,)):Get.to(()=>CompletedJobScreen());
             },
                   backgroundColor: CommonColors.primaryColor,
                   textColor: CommonColors.white,
@@ -132,15 +136,18 @@ class CommonBox extends StatelessWidget {
                   children: [
                     Expanded(
                       child: CommonButton(
+                        isLoading: isLoadingReject??false,
                         text: 'Reject',
                         backgroundColor: Colors.transparent,
                         textColor: CommonColors.purple,
                         borderColor: CommonColors.purple,
+                        onTap: onReject,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: CommonButton(
+                        isLoading: isLoadingAccept??false,
                         backgroundColor: CommonColors.primaryColor,
                         textColor: CommonColors.white,
 

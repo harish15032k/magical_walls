@@ -47,12 +47,12 @@ class CommonButton extends StatelessWidget {
         ),
         alignment: Alignment.center,
         child: isLoading
-            ? const SizedBox(
+            ?  SizedBox(
                 height: 20,
                 width: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: CommonColors.white,
+                  color: textColor,
                 ),
               )
             : Row(

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
+import 'package:magical_walls/presentation/pages/profile/model/profile_model.dart';
 
 class BankDetailsScreen extends StatelessWidget {
-  const BankDetailsScreen({super.key});
+  Data data;
+   BankDetailsScreen({super.key ,required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -45,28 +47,28 @@ class BankDetailsScreen extends StatelessWidget {
                   children: [
                     _twoColumnRow(
                       'Account Holder Name',
-                      'Ashok',
+                      data.bankHolderName??'',
                       '',
                       '',
                     ),
                     const SizedBox(height: 10),
                     _twoColumnRow(
                       'Bank',
-                      'State Bank of India',
+                      data.bankName??'',
                       '',
                       '',
                     ),
                     const SizedBox(height: 10),
                     _twoColumnRow(
                       'Account Number',
-                      '1234567890123456',
+                      data.accountNumber??'',
                       '',
                       '',
                     ),
                     const SizedBox(height: 10),
                     _twoColumnRow(
                       'IFSC Code',
-                      'SBIN0001234',
+                     data.ifscCode??'',
                       '',
                       '',
                     ),

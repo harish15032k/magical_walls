@@ -14,4 +14,13 @@ class ApiUrls{
   static const String updateToggle = '$_baseUrl/technician/availablityUpdate';
   static const String riseSupport = '$_baseUrl/customerSupport';
   static const String profileUpdate = '$_baseUrl/technician/updateTechnician';
+  static const String acceptOrder = '$_baseUrl/acceptService';
+  static const String startJobSentOtp = '$_baseUrl/technician/startJobOtp';
+  static const String verifyStarJobOtp = '$_baseUrl/technician/verifyOtp';
+  static const String verifyEndJobOtp = '$_baseUrl/technician/verifyOtp'; // Changes Need
+  static const String takeSelfieToStartJob = '$_baseUrl/technician/selfie';
+  static const String takeSelfieToEndJob = '$_baseUrl/technician/selfie'; // Changes Need
+  static const String markAsCompleted = '$_baseUrl/technician/completeWork';
+  static const String getNotification = '$_baseUrl/getNotifications';
+
 }

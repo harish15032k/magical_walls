@@ -1,15 +1,21 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
+import 'package:magical_walls/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
 import '../../../widgets/common_textfield.dart';
+import 'package:magical_walls/presentation/pages/profile/model/profile_model.dart';
+
 
 class ProfileEdit extends StatefulWidget {
-  const ProfileEdit({super.key});
+  Data data;
+   ProfileEdit({super.key,required this.data});
 
   @override
   State<ProfileEdit> createState() => _ProfileEditState();
@@ -17,10 +23,28 @@ class ProfileEdit extends StatefulWidget {
 
 class _ProfileEditState extends State<ProfileEdit> {
   bool _isAvailable = true;
-  final TextEditingController dob = TextEditingController();
-  final TextEditingController name = TextEditingController();
-  final TextEditingController mobile = TextEditingController();
-  final TextEditingController Address = TextEditingController();
+
+  ProfileController controller = Get.put(ProfileController());
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller.dob.text=widget.data.dob??'';
+    controller.name.text=widget.data.name??'';
+    controller.mobile.text=widget.data.phone??'';
+    controller.Address.text=widget.data.email??'';
+  }
+  Future<void> imagePicker() async {
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        controller.pickedProfileImage = File(pickedFile.path);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,12 +55,18 @@ class _ProfileEditState extends State<ProfileEdit> {
           right: 18,
           bottom: MediaQuery.of(context).viewInsets.bottom + 40,
         ),
-        child: CommonButton(
-          text: "Save Changes",
-        backgroundColor: CommonColors.primaryColor,
-          textColor: CommonColors.white,
+        child: Obx(()=>
+           CommonButton(
+             isLoading: controller.isLoading.value,
+            text: "Save Changes",
+          backgroundColor: CommonColors.primaryColor,
+            textColor: CommonColors.white,
 
-          onTap: () {},
+            onTap: () {
+
+               controller.updateProfile(context);
+            },
+          ),
         ),
       ),
       body: SafeArea(
@@ -61,16 +91,24 @@ class _ProfileEditState extends State<ProfileEdit> {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: AssetImage('assets/images/man.png'),
+                    backgroundImage: controller.pickedProfileImage == null
+                        ? const AssetImage('assets/images/man.png') as ImageProvider
+                        : FileImage(controller.pickedProfileImage!),
                     child: Align(
                       alignment: Alignment.bottomRight,
-                      child: Image.asset(
-                        'assets/images/edit.png',
-                        width: 24,
-                        height: 24,
+                      child: GestureDetector(
+                        onTap: () {
+                          imagePicker();
+                        },
+                        child: Image.asset(
+                          'assets/images/edit.png',
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
                     ),
                   ),
+
 
 
 
@@ -78,7 +116,7 @@ class _ProfileEditState extends State<ProfileEdit> {
               ),
               const SizedBox(height: 24),
               CommonTextField(
-                controller: name,
+                controller: controller.name,
                 label: 'Full Name',
                 hintText: '',
                 isRequired: true,
@@ -86,7 +124,7 @@ class _ProfileEditState extends State<ProfileEdit> {
 
               SizedBox(height: Get.height * 0.020),
               CommonTextField(
-                controller: mobile,
+                controller: controller.mobile,
                 label: 'Mobile Number',
                 hintText: '',
                 isRequired: true,
@@ -100,7 +138,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                   padding: const EdgeInsets.all(12.0),
                   child: Image.asset("assets/images/calendar.png", width: 5),
                 ),
-                controller: dob,
+                controller: controller.dob,
                 label: 'Date Of Birth',
                 onSuffixTap: () async {
                   DateTime? picked = await showDatePicker(
@@ -128,7 +166,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                   );
 
                   if (picked != null) {
-                    dob.text = "${picked.day}/${picked.month}/${picked.year}";
+                    controller.dob.text = "${picked.day}/${picked.month}/${picked.year}";
                   }
                 },
 
@@ -137,7 +175,7 @@ class _ProfileEditState extends State<ProfileEdit> {
               ),
               SizedBox(height: Get.height * 0.020),
               CommonTextField(
-                controller: Address,
+                controller: controller.Address,
                 keyboardType: TextInputType.emailAddress,
                 label: 'Email Address',
                 hintText: '',

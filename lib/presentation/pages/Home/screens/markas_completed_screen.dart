@@ -7,9 +7,12 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text.dart';
 import '../../../widgets/common_button.dart';
+import '../controller/home_controller.dart';
 
 class MarkAsCompleted extends StatefulWidget {
-  const MarkAsCompleted({super.key});
+  final dynamic id;
+  final String jobType;
+  const MarkAsCompleted({super.key, required this.id, required this.jobType});
 
   @override
   State<MarkAsCompleted> createState() => _MarkAsCompletedState();
@@ -17,16 +20,16 @@ class MarkAsCompleted extends StatefulWidget {
 
 class _MarkAsCompletedState extends State<MarkAsCompleted> {
   final List<bool> _checklist = [false, false, false, false, false];
-  File? _pickedImage;
-  final TextEditingController _commentController = TextEditingController();
 
-  Future<void> _pickImage() async {
+  HomeController controller = Get.put(HomeController());
+  Future<void> imagePicker() async {
     final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
+      source: ImageSource.camera,
     );
+
     if (pickedFile != null) {
       setState(() {
-        _pickedImage = File(pickedFile.path);
+        controller.markAsCompletedImage = File(pickedFile.path);
       });
     }
   }
@@ -61,13 +64,15 @@ class _MarkAsCompletedState extends State<MarkAsCompleted> {
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: CommonColors.purple.withAlpha(30),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              '#BK234521',
+                              '#BK${widget.id ?? 0}',
                               style: CommonTextStyles.regular12.copyWith(
                                 color: CommonColors.purple,
                               ),
@@ -75,27 +80,20 @@ class _MarkAsCompletedState extends State<MarkAsCompleted> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'AC Repair – Gas Refill',
+                            widget.jobType ?? '',
                             style: CommonTextStyles.medium16,
                           ),
                         ],
                       ),
                     ],
                   ),
-                  Text(
-                    "01:24:26",
-                    style: CommonTextStyles.medium14,
-                  ),
+                  Text("01:24:26", style: CommonTextStyles.medium14),
                 ],
               ),
 
               const SizedBox(height: 24),
 
-              /// Job Checklist
-              Text(
-                'Job Checklist',
-                style: CommonTextStyles.medium20,
-              ),
+              Text('Job Checklist', style: CommonTextStyles.medium20),
               const SizedBox(height: 8),
               _buildCheckBox("Inspect the AC Unit", 0),
               _buildCheckBox("Identify Gas Leakage", 1),
@@ -108,85 +106,89 @@ class _MarkAsCompletedState extends State<MarkAsCompleted> {
               /// Upload Photos
               Text(
                 "Upload Photos",
-                style: CommonTextStyles.medium20
-                    .copyWith(color: CommonColors.secondary),
+                style: CommonTextStyles.medium20.copyWith(
+                  color: CommonColors.secondary,
+                ),
               ),
               const SizedBox(height: 12),
-              _pickedImage == null
+              controller.markAsCompletedImage == null
                   ? DottedBorder(
-                options: RoundedRectDottedBorderOptions(
-                  dashPattern: [8, 4],
-                  strokeWidth: 1,
-                  radius: Radius.circular(8),
-                  color: CommonColors.grey.withAlpha(80),
-                ),
-                child: GestureDetector(
-                  onTap: _pickImage,
-                  child: Container(
-                    width: double.infinity,
-                    height: 42,
-                    color: CommonColors.fileUpload,
-                    child: Center(
-                      child: Text(
-                        'Click to Upload',
-                        style: CommonTextStyles.regular14,
+                      options: RoundedRectDottedBorderOptions(
+                        dashPattern: [8, 4],
+                        strokeWidth: 1,
+                        radius: Radius.circular(8),
+                        color: CommonColors.grey.withAlpha(80),
                       ),
-                    ),
-                  ),
-                ),
-              )
+                      child: GestureDetector(
+                        onTap: imagePicker,
+                        child: Container(
+                          width: double.infinity,
+                          height: 42,
+                          color: CommonColors.fileUpload,
+                          child: Center(
+                            child: Text(
+                              'Click to Upload',
+                              style: CommonTextStyles.regular14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
                   : Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.file(
-                      _pickedImage!,
-                      fit: BoxFit.cover,
-                      width: 200,
-                      height: 100,
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            controller.markAsCompletedImage!,
+                            fit: BoxFit.cover,
+                            width: 200,
+                            height: 100,
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
 
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _pickedImage = null;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          shape: BoxShape.circle,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                controller.markAsCompletedImage = null;
+                              });
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.5),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                size: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.close,
-                          size: 20,
-                          color: Colors.white,
-                        ),
-                      ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
 
               const SizedBox(height: 20),
 
               /// Comments
               Text(
                 "Comments",
-                style: CommonTextStyles.medium20
-                    .copyWith(color: CommonColors.secondary),
+                style: CommonTextStyles.medium20.copyWith(
+                  color: CommonColors.secondary,
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
-                controller: _commentController,
+                controller: controller.commentController,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(2),
                     borderSide: BorderSide(color: CommonColors.textFieldGrey),
@@ -201,32 +203,36 @@ class _MarkAsCompletedState extends State<MarkAsCompleted> {
               const Spacer(),
 
               /// Bottom Button
-              _pickedImage == null
+              controller.markAsCompletedImage == null
                   ? Center(
-                    child: Container(
-                                    width: 200,
-                                    padding: const EdgeInsets.symmetric(vertical: 14,),
-                                    decoration: BoxDecoration(
-                    color: CommonColors.grey.withAlpha(25),
-                    borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Center(
-                    child: Text(
-                      "You have started this job.",
-                      style: CommonTextStyles.medium14
-                          .copyWith(color: CommonColors.grey),
+                      child: Container(
+                        width: 200,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          color: CommonColors.grey.withAlpha(25),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "You have started this job.",
+                            style: CommonTextStyles.medium14.copyWith(
+                              color: CommonColors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : Obx(
+                      () => CommonButton(
+                        isLoading: controller.isLoading.value,
+                        text: "Mark Service as Completed",
+                        backgroundColor: CommonColors.primaryColor,
+                        textColor: CommonColors.white,
+                        onTap: () {
+                          controller.markAsCompleted(widget.id);
+                        },
+                      ),
                     ),
-                                    ),
-                                  ),
-                  )
-                  : CommonButton(
-                text: "Mark Service as Completed",
-                backgroundColor: CommonColors.primaryColor,
-                textColor: CommonColors.white,
-                onTap: () {
-                  debugPrint("Service Completed");
-                },
-              ),
             ],
           ),
         ),
@@ -236,15 +242,11 @@ class _MarkAsCompletedState extends State<MarkAsCompleted> {
 
   Widget _buildCheckBox(String title, int index) {
     return CheckboxListTile(
-
       contentPadding: EdgeInsets.zero,
       dense: true,
       title: Text(title, style: CommonTextStyles.regular14),
       value: _checklist[index],
-      side:  BorderSide(
-        color:CommonColors.textFieldGrey ,
-        width: 1,
-      ),
+      side: BorderSide(color: CommonColors.textFieldGrey, width: 1),
       onChanged: (value) {
         setState(() {
           _checklist[index] = value ?? false;

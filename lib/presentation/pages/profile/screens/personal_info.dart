@@ -3,9 +3,10 @@ import 'package:get/get.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text.dart';
-
+import 'package:magical_walls/presentation/pages/profile/model/profile_model.dart';
 class PersonalInfo extends StatelessWidget {
-  const PersonalInfo({super.key});
+  Data data;
+   PersonalInfo({super.key ,required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +47,11 @@ class PersonalInfo extends StatelessWidget {
                   children: [
                     _twoColumnRow(
                       'Services',
-                      'Electrician',
+                      data.service?.join(", ") ?? "",
                       'Years of Experience',
-                      "6.7",
+                      data.experience??'',
                     ),
-                    SizedBox(height: 10),
-                    _twoColumnRow('Services', 'Electrician', '', ""),
+
                     SizedBox(height: 15),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,8 +65,7 @@ class PersonalInfo extends StatelessWidget {
                         SizedBox(height: 3,),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(3),
-                          child: Image.asset(
-                            'assets/images/ac.png',
+                          child: Image.network(data.skillCertificate??'',
                             width: 150,
                             height: 100,
                             fit: BoxFit.cover,

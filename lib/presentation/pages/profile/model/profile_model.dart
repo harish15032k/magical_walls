@@ -9,7 +9,8 @@ class ProfileRes {
     this.data,
   });
 
-  factory ProfileRes.fromJson(String str) => ProfileRes.fromMap(json.decode(str));
+  factory ProfileRes.fromJson(String str) =>
+      ProfileRes.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
@@ -57,8 +58,8 @@ class Data {
   dynamic wallet;
   String? bankHolderName;
   String? bankName;
-  List<dynamic>? spokenLanguages;
-  List<dynamic>? service;
+  List<String>? spokenLanguages;
+  List<String>? service;
   String? gender;
   String? accountNumber;
   String? ifscCode;
@@ -164,8 +165,18 @@ class Data {
     wallet: json["wallet"],
     bankHolderName: json["bank_holder_name"],
     bankName: json["bank_name"],
-    spokenLanguages: json["spoken_languages"] == null ? [] : List<dynamic>.from(json["spoken_languages"]!.map((x) => x)),
-    service: json["service"] == null ? [] : List<dynamic>.from(json["service"]!.map((x) => x)),
+    spokenLanguages: json["spoken_languages"] == null
+        ? []
+        : (json["spoken_languages"] is List
+        ? List<String>.from(
+        json["spoken_languages"].map((x) => x.toString()))
+        : [json["spoken_languages"].toString()]),
+    service: json["service"] == null
+        ? []
+        : (json["service"] is List
+        ? List<String>.from(
+        json["service"].map((x) => x.toString()))
+        : [json["service"].toString()]),
     gender: json["gender"],
     accountNumber: json["account_number"],
     ifscCode: json["ifsc_code"],
@@ -179,8 +190,10 @@ class Data {
     rememberToken: json["remember_token"],
     fcmToken: json["fcm_token"],
     otpCode: json["otp_code"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    createdAt:
+    json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt:
+    json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
   );
 
   Map<String, dynamic> toMap() => {
@@ -216,8 +229,8 @@ class Data {
     "wallet": wallet,
     "bank_holder_name": bankHolderName,
     "bank_name": bankName,
-    "spoken_languages": spokenLanguages == null ? [] : List<dynamic>.from(spokenLanguages!.map((x) => x)),
-    "service": service == null ? [] : List<dynamic>.from(service!.map((x) => x)),
+    "spoken_languages": spokenLanguages ?? [],
+    "service": service ?? [],
     "gender": gender,
     "account_number": accountNumber,
     "ifsc_code": ifscCode,
