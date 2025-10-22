@@ -4,13 +4,16 @@ import 'package:magical_walls/core/utils/utils.dart';
 import 'package:magical_walls/presentation/pages/Earnings/repository/earnings_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import '../model/earnings_model.dart';
+import '../model/Monthly_model.dart';
+import '../model/earnings_model.dart' as bar;
 
 class EarningsController extends GetxController {
   EarningsRepository repo = EarningsRepository();
 
   var isLoading = false.obs;
-  var earningsData = <Datum>[].obs;
+  var earningsData = <bar.Datum>[].obs;
+  var monthlyEarningsData = <CompletedServicesPaid>[].obs;
+  var data = Data().obs;
   var totalEarnings = 0.obs;
 
   var currentWeek = Rx<({DateTime start, DateTime end})>((
@@ -41,7 +44,7 @@ class EarningsController extends GetxController {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var token = prefs.getString('token');
       isLoading.value = true;
-      BarChartRes res = await repo.getEarnings(token!, request);
+      bar.BarChartRes res = await repo.getEarnings(token!, request);
       if (res.status == true) {
         earningsData.assignAll(res.data ?? []);
         totalEarnings.value = earningsData.fold(
@@ -53,6 +56,25 @@ class EarningsController extends GetxController {
           start: DateTime.parse(startDate),
           end: DateTime.parse(endDate),
         );
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  }
+  getMonthlyEarnings(dynamic filter) async {
+    try {
+      Map<String, dynamic> request = {
+        "filter": filter,
+
+      };
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString('token');
+      isLoading.value = true;
+      EarningRes res = await repo.getMonthlyEarnings(token!, request);
+      if (res.status == true) {
+        monthlyEarningsData.assignAll(res.data!.completedServicesPaid ?? []);
+        data.value= res.data!;
+
       }
     } finally {
       isLoading.value = false;

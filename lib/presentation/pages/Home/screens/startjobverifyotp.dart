@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -127,16 +129,44 @@ class _StartJobOtpState extends State<StartJobOtp> {
                   text: 'Verify OTP',
                   onTap: () {
                     FocusScope.of(context).unfocus();
+
                     if (pin.length != 4) {
                       showCustomSnackBar(
                         context: context,
                         errorMessage: "Pin should be 4 digit",
                       );
-                    } else {
-                      controller.verifyStarJobOtp(widget.id,pin,widget.isEndJob);
+                      return;
+                    }
 
+                    if (widget.isEndJob == true) {
+                      final selectedIds = <int>[];
+
+
+                      for (int i = 0; i < controller.checkListData.length; i++) {
+                        final id = controller.checkListData[i].id;
+                        if (controller.checklist[i] && id != null) {
+                          selectedIds.add(id);
+                        }
+                      }
+
+                      final photos = <File>[];
+                      if (controller.startSelfiePic.value != null) {
+                        photos.add(File(controller.startSelfiePic.value!.path));
+                      }
+
+
+                      controller.markAsCompleted(
+                        context,
+                        widget.id,
+                        pin,
+                        selectedIds,
+                        photos,
+                      );
+                    } else {
+                      controller.verifyStarJobOtp(widget.id, pin, widget.isEndJob);
                     }
                   },
+
                 ),
               ),
               SizedBox(height: 20),

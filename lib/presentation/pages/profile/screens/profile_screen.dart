@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:magical_walls/presentation/pages/profile/screens/profile_edit.da
 import 'package:magical_walls/presentation/pages/profile/screens/profile_suppport.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/shimmer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

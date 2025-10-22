@@ -8,7 +8,7 @@ import 'package:magical_walls/presentation/pages/profile/controller/profile_cont
 import 'package:magical_walls/presentation/widgets/common_box.dart';
 import 'package:magical_walls/presentation/widgets/shimmer.dart';
 
-import '../../../widgets/common_button.dart';
+import '../../profile/screens/profile_edit.dart';
 import '../model/home_mode.dart';
 import '../model/Completed_order_model.dart' as co;
 import 'order_viewdetails.dart';
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     profileController.getProfile();
   }
 
-  Widget _buildJobList(List<Datum> jobs, String emptyMessage) {
+  Widget _buildJobList(List<Datum> jobs, String emptyMessage,String tabName) {
     return Obx(() {
       if (homeController.isLoading.value) {
         return ShimmerWidgets.shimmerBox(count: 4, height: 200);
@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: Obx(
               () => CommonBox(
-                tab: emptyMessage,
+                tab: tabName,
                 jobId: job.bookingId?.toString() ?? '',
                 jobType: job.serviceType ?? '',
                 customerName: job.customerName ?? '',
@@ -149,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Widget _buildJobListCompleted(List<co.Datum> jobs, String emptyMessage) {
+  Widget _buildJobListCompleted(List<co.Datum> jobs, String emptyMessage,String tabName) {
     return Obx(() {
       if (homeController.isLoading.value) {
         return ShimmerWidgets.shimmerBox(count: 4, height: 200);
@@ -194,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // );
             },
             child: CommonBox(
-              tab: emptyMessage,
+              tab: tabName,
               jobId: job.bookingId?.toString() ?? '',
               jobType: job.serviceType ?? '',
               customerName: job.timeSlot ?? '',
@@ -254,49 +254,64 @@ class _HomeScreenState extends State<HomeScreen> {
                     final name = profileController.profileData.isNotEmpty
                         ? profileController.profileData.first.name ?? "?"
                         : "?";
-                    return CircleAvatar(
-                      radius: 15,
-                      backgroundColor: CommonColors.grey,
-                      child: Text(
-                        name.isNotEmpty ? name.substring(0, 1).toUpperCase() : "?",
-                        style: CommonTextStyles.medium16.copyWith(
-                          color: CommonColors.white,
+                    return GestureDetector(
+                      onTap: (){
+                        Get.to(
+                              () => ProfileEdit(
+                            data: profileController.profileData.first,
+                          ),
+                          transition: Transition.rightToLeft,
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 15,
+                        backgroundColor: CommonColors.grey,
+                        child: Text(
+                          name.isNotEmpty ? name.substring(0, 1).toUpperCase() : "?",
+                          style: CommonTextStyles.medium16.copyWith(
+                            color: CommonColors.white,
+                          ),
                         ),
                       ),
                     );
                   } else {
 
-                    return CircleAvatar(
-                      radius: 15,
-                      backgroundColor: CommonColors.grey,
-                      backgroundImage: NetworkImage(
-                        profileController.profileData.first.technicianImage!,
+                    return GestureDetector(
+                      onTap: (){
+                        Get.to(
+                              () => ProfileEdit(
+                            data: profileController.profileData.first,
+                          ),
+                          transition: Transition.rightToLeft,
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 15,
+                        backgroundColor: CommonColors.grey,
+                        backgroundImage: NetworkImage(
+                          profileController.profileData.first.technicianImage!,
+                        ),
                       ),
                     );
                   }
                 }),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      showNewServiceRequestPopup(context);
-                    },
-                    child: Obx(() {
-                      if (profileController.profileData.isEmpty) {
-                        return Text(
-                          'Hi, !',
-                          style: CommonTextStyles.medium16,
-                          overflow: TextOverflow.ellipsis,
-                        );
-                      } else {
-                        return Text(
-                          'Hi, ${profileController.profileData.first.name ?? ''} !',
-                          style: CommonTextStyles.medium16,
-                          overflow: TextOverflow.ellipsis,
-                        );
-                      }
-                    }),
-                  ),
+                  child: Obx(() {
+                    if (profileController.profileData.isEmpty) {
+                      return Text(
+                        'Hi, !',
+                        style: CommonTextStyles.medium16,
+                        overflow: TextOverflow.ellipsis,
+                      );
+                    } else {
+                      return Text(
+                        'Hi, ${profileController.profileData.first.name ?? ''} !',
+                        style: CommonTextStyles.medium16,
+                        overflow: TextOverflow.ellipsis,
+                      );
+                    }
+                  }),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -346,14 +361,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildJobList(
                   homeController.upcomingOrders,
                   "No upcoming jobs yet",
+                  'upcoming'
                 ),
                 _buildJobList(
                   homeController.ongoingOrders,
-                  "No ongoing jobs yet",
+                  "No ongoing jobs yet",'ongoing'
                 ),
                 _buildJobListCompleted(
                   homeController.completedOrders,
-                  "No completed jobs yet",
+                  "No completed jobs yet",'completed'
                 ),
               ],
             ),
@@ -363,170 +379,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void showNewServiceRequestPopup(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          insetPadding: const EdgeInsets.only(left: 16, right: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Stack(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: CommonColors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: CommonColors.textFieldGrey,
-                    width: 1.5,
-                  ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'New Service Request',
-                      style: CommonTextStyles.medium22,
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      'You will got a new job nearby.',
-                      style: CommonTextStyles.regular14.copyWith(
-                        color: CommonColors.secondary,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Container(
-                      color: CommonColors.purple.withAlpha(30),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text(
-                          '#df45cxw2',
-                          style: CommonTextStyles.regular12.copyWith(
-                            color: CommonColors.purple,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'AC Repair - Gas Refill',
-                      style: CommonTextStyles.medium18.copyWith(
-                        color: CommonColors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Customer',
-                              style: CommonTextStyles.regular14.copyWith(
-                                color: CommonColors.secondary,
-                              ),
-                            ),
-                            Text(
-                              'Ravi Kumar',
-                              style: CommonTextStyles.medium14,
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Date',
-                              style: CommonTextStyles.regular14.copyWith(
-                                color: CommonColors.secondary,
-                              ),
-                            ),
-                            Text(
-                              '25 July 2025',
-                              style: CommonTextStyles.medium14,
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Time Slot',
-                              style: CommonTextStyles.regular14.copyWith(
-                                color: CommonColors.secondary,
-                              ),
-                            ),
-                            Text(
-                              '10 AM – 12 PM',
-                              style: CommonTextStyles.regular14,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Address',
-                      style: CommonTextStyles.regular14.copyWith(
-                        color: CommonColors.secondary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Flat 202, Lotus Apartments, Chennai",
-                      style: CommonTextStyles.medium14,
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: CommonButton(
-                            onTap: () {
-                              Get.back();
-                            },
-                            text: 'Reject',
-                            backgroundColor: Colors.transparent,
-                            textColor: CommonColors.purple,
-                            borderColor: CommonColors.purple,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: CommonButton(
-                            backgroundColor: CommonColors.primaryColor,
-                            textColor: CommonColors.white,
-                            text: 'Accept',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: 8,
-                right: 8,
-                width: 20,
-                child: InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Image.asset('assets/images/close-circle.png'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+
 }

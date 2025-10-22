@@ -29,7 +29,17 @@ class _ProfileEditState extends State<ProfileEdit> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    controller.dob.text=widget.data.dob??'';
+    if (widget.data.dob != null && widget.data.dob!.isNotEmpty) {
+      try {
+        DateTime parsedDate = DateTime.parse(widget.data.dob!);
+        controller.dob.text =
+        "${parsedDate.day}/${parsedDate.month.toString().padLeft(2, '0')}/${parsedDate.year}";
+      } catch (e) {
+        controller.dob.text = widget.data.dob ?? '';
+      }
+    } else {
+      controller.dob.text = '';
+    }
     controller.name.text=widget.data.name??'';
     controller.mobile.text=widget.data.phone??'';
     controller.Address.text=widget.data.email??'';
@@ -91,29 +101,50 @@ class _ProfileEditState extends State<ProfileEdit> {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: controller.pickedProfileImage == null
-                        ? const AssetImage('assets/images/man.png') as ImageProvider
-                        : FileImage(controller.pickedProfileImage!),
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          imagePicker();
-                        },
-                        child: Image.asset(
-                          'assets/images/edit.png',
-                          width: 24,
-                          height: 24,
+                    backgroundColor: CommonColors.primaryColor.withOpacity(0.2),
+                    backgroundImage: controller.pickedProfileImage != null
+                        ? FileImage(controller.pickedProfileImage!)
+                        : (widget.data.technicianImage != null && widget.data.technicianImage!.isNotEmpty)
+                        ? NetworkImage(widget.data.technicianImage!) as ImageProvider
+                        : null,
+                    child: Stack(
+                      children: [
+
+                        if (controller.pickedProfileImage == null &&
+                            (widget.data.technicianImage == null || widget.data.technicianImage!.isEmpty))
+                          Center(
+                            child: Text(
+                              widget.data.name != null && widget.data.name!.length >= 2
+                                  ? widget.data.name!.substring(0, 2).toUpperCase()
+                                  : (widget.data.name?.substring(0, 1).toUpperCase() ?? ''),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              imagePicker();
+                            },
+                            child: Image.asset(
+                              'assets/images/edit.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-
-
-
-
                 ],
               ),
+
+
               const SizedBox(height: 24),
               CommonTextField(
                 controller: controller.name,

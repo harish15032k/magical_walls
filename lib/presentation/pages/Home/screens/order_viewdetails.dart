@@ -10,6 +10,9 @@ class JobDetailsScreen extends StatefulWidget {
   final Map<String, dynamic?> job;
   late bool isaccept;
 
+
+
+
   JobDetailsScreen({super.key, required this.job, this.isaccept = false});
 
   @override
@@ -19,7 +22,7 @@ class JobDetailsScreen extends StatefulWidget {
 class _JobDetailsScreenState extends State<JobDetailsScreen> {
   @override
   void initState() {
-    // TODO: implement initState
+
     super.initState();
   }
 
@@ -209,7 +212,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                       isLoading: homeController.isLoading.value,
                                       onTap: () {
                                         homeController.getStartJobOtp(
-                                          widget.job['id'],
+                                          widget.job['id'],false,
                                         );
                                       },
                                       backgroundColor:

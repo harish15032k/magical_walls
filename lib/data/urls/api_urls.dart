@@ -8,6 +8,7 @@ class ApiUrls{
   static const String kycStatus = '$_baseUrl/technician/kycStatus';
   static const String profileGet = '$_baseUrl/technician/techProfile';
   static const String earningsGet = '$_baseUrl/technician/weeklyEarnings';
+  static const String monthlyEarningsGet = '$_baseUrl/technician/monthlyReport';
   static const String locationUpdate = '$_baseUrl/technician/updateLocation';
   static const String getOrderList = '$_baseUrl/technicianHome';
   static const String withDrawRequest = '$_baseUrl/technician/requestWithdrawal';
@@ -17,10 +18,11 @@ class ApiUrls{
   static const String acceptOrder = '$_baseUrl/acceptService';
   static const String startJobSentOtp = '$_baseUrl/technician/startJobOtp';
   static const String verifyStarJobOtp = '$_baseUrl/technician/verifyOtp';
-  static const String verifyEndJobOtp = '$_baseUrl/technician/verifyOtp'; // Changes Need
+  static const String verifyEndJobOtp = '$_baseUrl/technician/requestCompletionOtp';
   static const String takeSelfieToStartJob = '$_baseUrl/technician/selfie';
   static const String takeSelfieToEndJob = '$_baseUrl/technician/selfie'; // Changes Need
   static const String markAsCompleted = '$_baseUrl/technician/completeWork';
   static const String getNotification = '$_baseUrl/getNotifications';
+  static const String getCheckList = '$_baseUrl/getServiceIncludes';
 
 }

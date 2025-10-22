@@ -43,16 +43,38 @@ class AuthController extends GetxController {
   final TextEditingController accountNumber = TextEditingController();
   final TextEditingController ifscCode = TextEditingController();
   bool isTermsAccepted = false;
-  final _kycStatusController = StreamController<String>.broadcast();
-  Stream<String> get kycStatusStream => _kycStatusController.stream;
   var kycStatus = ''.obs;
+
+  Future<void> getKycStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token');
+
+    try {
+      isLoading.value = true;
+      KycRes res = await repo.getKycStatus(token!);
+
+      if (res.status == true) {
+        kycStatus.value = res.data?.kycStatus ?? '';
+        log('✅ KYC STATUS FROM API: ${kycStatus.value}');
+      } else {
+        kycStatus.value = '';
+      }
+    } catch (e) {
+      log('❌ getKycStatus error: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   getOtp(BuildContext context) async {
     try {
       isLoading.value = true;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var fcmToken = prefs.getString('fcm_token');
       Map<String, String> request = {
         'phone': mobile.text,
-        'fcm_token':
-            'e5zr4hE_TdqvspLM7rFztW:APA91bHwKnAl6DS8AWTayjqYcgy8s4HVtUO7CW2TCOLVuyOPoMiIl7POFxX8KROaLgshVvEN0TKeOk0XEcqwMy4lmUoNOvzgEUNFxWRUVpC30heKUXQkRt8',
+        'fcm_token':fcmToken??'',
+
       };
 
       GetOtpRes res = await repo.getOtp(request);
@@ -127,7 +149,7 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Validate and format date
+
       DateTime? dateOfBirth;
       try {
         dateOfBirth = DateFormat('dd/MM/yyyy').parse(dob.text);
@@ -214,29 +236,7 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> getKycStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
 
-    try {
-      isLoading.value = true;
-      KycRes res = await repo.getKycStatus(token!);
 
-      if (res.status == true) {
-        _kycStatusController.add(res.data?.kycStatus ?? '');
-      } else {
-        _kycStatusController.add('');
-      }
-    } catch (e) {
-      _kycStatusController.addError(e.toString());
-    } finally {
-      isLoading.value = false;
-    }
-  }
 
-  @override
-  void onClose() {
-    _kycStatusController.close();
-    super.onClose();
-  }
 }

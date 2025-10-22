@@ -9,7 +9,8 @@ import 'package:magical_walls/presentation/widgets/common_textfield.dart';
 import '../../../../core/utils/utils.dart';
 
 class WithdrawScreen extends StatefulWidget {
-  const WithdrawScreen({super.key});
+  final dynamic totalEarnings;
+  const WithdrawScreen({super.key, this.totalEarnings});
 
   @override
   State<WithdrawScreen> createState() => _WithdrawScreenState();
@@ -17,7 +18,7 @@ class WithdrawScreen extends StatefulWidget {
 
 class _WithdrawScreenState extends State<WithdrawScreen> {
   final TextEditingController _amountController = TextEditingController();
-  final String totalEarnings = "₹12,450";
+
   EarningsController controller = Get.put(EarningsController());
 
   @override
@@ -51,7 +52,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
               ),
               const SizedBox(height: 18),
               Text(
-                "Available Balance: ₹12,450",
+                "Available Balance: ₹${widget.totalEarnings}",
                 style: CommonTextStyles.regular18.copyWith(
                   color: CommonColors.black,
                 ),
@@ -74,7 +75,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                 ),
               ),
               Text(
-                "Canara Bank",
+                "Bank",
                 style: CommonTextStyles.regular18.copyWith(
                   color: CommonColors.black,
                 ),
@@ -88,18 +89,40 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                   textColor: CommonColors.white,
                   onTap: () {
                     FocusScope.of(context).unfocus();
+
                     if (_amountController.text.isEmpty) {
                       showCustomSnackBar(
                         context: context,
-                        errorMessage: 'Enter a Amount',
+                        errorMessage: 'Enter an amount',
                       );
-                    } else {
-                      controller.withdrawRequest(
-                        _amountController.text,
-                        context,
-                      );
+                      return;
                     }
+
+                    final enteredAmount = double.tryParse(_amountController.text) ?? 0;
+                    final totalEarnings = double.tryParse(widget.totalEarnings.toString()) ?? 0;
+
+                    if (enteredAmount > totalEarnings) {
+                      showCustomSnackBar(
+                        context: context,
+                        errorMessage: 'Insufficient balance',
+                      );
+                      return;
+                    }
+
+                    if (enteredAmount <= 0) {
+                      showCustomSnackBar(
+                        context: context,
+                        errorMessage: 'Please enter a valid amount',
+                      );
+                      return;
+                    }
+
+                    controller.withdrawRequest(
+                      _amountController.text,
+                      context,
+                    );
                   },
+
                 ),
               ),
             ],

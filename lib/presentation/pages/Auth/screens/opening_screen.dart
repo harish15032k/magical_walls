@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
       bool? isFirstOpen = prefs.getBool("isFirstOpen");
       bool? isLogin = prefs.getBool("isLogin");
       int? isKycCompleted = prefs.getInt("isKycCompleted");
-      bool? isKycVerified = prefs.getBool("iskycverified");
+      bool? isKycVerified = prefs.getBool("isKycVerified");
       bool? isLocationUpdated = prefs.getBool("locationUpdated");
 
       Widget nextScreen;
