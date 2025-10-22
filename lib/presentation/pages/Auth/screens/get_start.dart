@@ -17,49 +17,51 @@ class _GetStartState extends State<GetStart> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: CommonColors.white,
-      body: ListView(
-        padding: EdgeInsets.only(top: 0),
-        children: [
-          Container(
-            color: Colors.amber,
-            margin: EdgeInsets.fromLTRB(70, 70, 70, 25),
-            child: Image.asset('assets/images/logo.png'),
-          ),
-
-          Image.asset("assets/images/painters.png"),
-          SizedBox(height: Get.height * 0.025),
-          Center(
-            child: Text(
-              'Welcome to Magicwall,\n   Technician Partner!',
-              style: CommonTextStyles.medium24,
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.only(top: 0),
+          children: [
+            Container(
+              color: Colors.amber,
+              margin: EdgeInsets.fromLTRB(70, 70, 70, 25),
+              child: Image.asset('assets/images/logo.png'),
             ),
-          ),
-          SizedBox(height: Get.height * 0.018),
-          Center(
-            child: Text(
-              'We’re excited to have you on board! Let’s get you set \n   up to start accepting service bookings and grow \n                          your business with us.',
-              style: CommonTextStyles.regular16.copyWith(
-                color: CommonColors.secondary,
+        
+            Image.asset("assets/images/painters.png"),
+            SizedBox(height: Get.height * 0.025),
+            Center(
+              child: Text(
+                'Welcome to Magicwall,\n   Technician Partner!',
+                style: CommonTextStyles.medium24,
               ),
             ),
-          ),
-          SizedBox(height: Get.height * 0.13),
-          Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: CommonButton(
-              backgroundColor: CommonColors.primaryColor,
-              textColor: CommonColors.white,
-              text: 'Get Started',
-              onTap: () {
-                Get.to(
-                  () => LoginScreen(),
-                  transition: Transition.downToUp,
-                  duration: Duration(milliseconds: 500),
-                );
-              },
+            SizedBox(height: Get.height * 0.018),
+            Center(
+              child: Text(
+                'We’re excited to have you on board! Let’s get you set \n   up to start accepting service bookings and grow \n                          your business with us.',
+                style: CommonTextStyles.regular16.copyWith(
+                  color: CommonColors.secondary,
+                ),
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: Get.height * 0.13),
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: CommonButton(
+                backgroundColor: CommonColors.primaryColor,
+                textColor: CommonColors.white,
+                text: 'Get Started',
+                onTap: () {
+                  Get.to(
+                    () => LoginScreen(),
+                    transition: Transition.downToUp,
+                    duration: Duration(milliseconds: 500),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

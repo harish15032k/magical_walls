@@ -96,6 +96,7 @@ void showNewServiceRequestPopup(BuildContext context, Map<String, dynamic> data)
         child: Stack(
           children: [
             GestureDetector( onTap: (){
+              debugPrint("JobDetailsScreen $data");
               // JobDetailsScreen(
               //   job: {
               //     'id': data['booking_service_id'].toString(),
@@ -161,7 +162,7 @@ void showNewServiceRequestPopup(BuildContext context, Map<String, dynamic> data)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
+                     Expanded(child:    Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -175,8 +176,8 @@ void showNewServiceRequestPopup(BuildContext context, Map<String, dynamic> data)
                               style: CommonTextStyles.medium14,
                             ),
                           ],
-                        ),
-                        Column(
+                        ),),
+                        Expanded(child:     Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -190,7 +191,7 @@ void showNewServiceRequestPopup(BuildContext context, Map<String, dynamic> data)
                               style: CommonTextStyles.regular14,
                             ),
                           ],
-                        ),
+                        ),),
                       ],
                     ),
                     const SizedBox(height: 8),

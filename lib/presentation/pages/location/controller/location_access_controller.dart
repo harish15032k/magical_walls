@@ -1,131 +1,113 @@
-
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
-import 'package:magical_walls/presentation/pages/location/model/location_model.dart';
+import 'package:http/http.dart' as http;
+import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/api_urls.dart';
 import '../../../../core/constants/app_text.dart';
 import '../../../../core/utils/utils.dart';
 import '../../Home/screens/bottom_bar.dart';
 import '../repository/location_repository.dart';
+
 class LocationAccessController extends GetxController {
-  var isLoading = false.obs;
   GoogleMapController? mapController;
-
-  CameraPosition kGooglePlex = const CameraPosition(
-    target: LatLng(11.0005324, 76.7359868),
-    zoom: 14.4746,
+  CameraPosition kGooglePlex = CameraPosition(
+    target: LatLng(11.0560888, 76.9513379),
+    zoom: 10.5,
   );
-
-  CameraPosition kLake = const CameraPosition(
-    bearing: 192.8334901395799,
-    target: LatLng(11.0005324, 76.7359868),
-    tilt: 59.440717697143555,
-    zoom: 20.15,
-  );
-
-  Location location = Location();
   LatLng? currentLatLng;
-  LocationRepository repo = LocationRepository();
+  String? currentLocation;
+  late LocationRepository repository;
+  RxBool isLoading = false.obs;
+  SharedPreferences? preferences;
 
-  Future<void> checkLocationPermissionAndGPS(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+  @override
+  void onInit() async {
+    preferences = await SharedPreferences.getInstance();
+    repository = LocationRepository();
+    super.onInit();
+  }
 
-    if (token == null) {
-      showCustomSnackBar(
-        context: context,
-        errorMessage: "User token not found. Please login again.",
-      );
-      return;
-    }
-
+  void checkLocationPermissionAndGPS(BuildContext context) async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     LocationPermission permission = await Geolocator.checkPermission();
-
     debugPrint("checkLocationPermissionAndGPS -> $permission");
+    if (context.mounted == true) {
+      if (!serviceEnabled) {
+        await _showGpsDialog(context);
+      } else if (permission == LocationPermission.denied) {
+        final r = await Geolocator.requestPermission();
+        if (r == LocationPermission.always ||
+            r == LocationPermission.whileInUse) {
+          isLoading.value = true;
+          final position =
+              await Geolocator.getLastKnownPosition() ??
+              await Geolocator.getCurrentPosition();
+          currentLatLng = LatLng(position.latitude, position.longitude);
+          if (mapController != null) {
+            mapController!.animateCamera(
+              CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  target: LatLng(position.latitude, position.longitude),
+                  zoom: 14.0,
+                ),
+              ),
+            );
+          }
+          await getAddress(position.latitude, position.longitude);
+          await updateLocationApi(
+            position: LatLng(position.latitude, position.longitude),
+            context: context,
+          );
+          isLoading.value = false;
+        } else if (r == LocationPermission.denied) {
+          showCustomSnackBar(
+            context: context,
+            errorMessage:
+                "Location Permission is denied permanently to enable location permission in app settings",
+          );
+        }
+      } else if (permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse) {
+        isLoading.value = true;
+        final position = await Geolocator.getCurrentPosition();
+        currentLatLng = LatLng(position.latitude, position.longitude);
 
-    if (!context.mounted) return;
-
-    if (!serviceEnabled) {
-      await _showGpsDialog(context);
-      return;
-    }
-
-    if (permission == LocationPermission.denied) {
-      final r = await Geolocator.requestPermission();
-      if (r != LocationPermission.always && r != LocationPermission.whileInUse) {
+        if (mapController != null) {
+          mapController!.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: LatLng(position.latitude, position.longitude),
+                zoom: 14.0,
+              ),
+            ),
+          );
+        }
+        await getAddress(position.latitude, position.longitude);
+        await updateLocationApi(
+          position: LatLng(position.latitude, position.longitude),
+          context: context,
+        );
+        isLoading.value = false;
+      } else if (permission == LocationPermission.deniedForever) {
         showCustomSnackBar(
           context: context,
           errorMessage:
-          "Location permission is denied. Please enable in settings.",
+              "Location Permission is denied permanently to enable location permission in app settings",
         );
-        return;
-      }
-    } else if (permission == LocationPermission.deniedForever) {
-      showCustomSnackBar(
-        context: context,
-        errorMessage:
-        "Location Permission is denied permanently. Please enable it in app settings.",
-      );
-      return;
-    }
-
-    await _updateLocationAndCallApi(context, token);
-  }
-
-  Future<void> _updateLocationAndCallApi(
-      BuildContext context, String token) async {
-    try {
-      isLoading.value = true;
-
-      final position = await Geolocator.getLastKnownPosition() ??
-          await Geolocator.getCurrentPosition();
-
-      currentLatLng = LatLng(position.latitude, position.longitude);
-
-      if (mapController != null) {
-        mapController!.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: currentLatLng!,
-              zoom: 14.0,
-            ),
-          ),
-        );
-      }
-
-      final map = {
-        'latitude': position.latitude,
-        'longitude': position.longitude,
-      };
-
-      LocationRes data = await repo.updateUserLocationApi(token, map);
-      if(data.status==true){
-        SharedPreferences prefs =await SharedPreferences.getInstance();
-        prefs.setBool('locationUpdated', true);
-
+      } else {
         showCustomSnackBar(
           context: context,
-          errorMessage: data.message ?? "Location updated successfully",
+          errorMessage: "Enable Location Permission to access your location",
         );
-
-        Get.to(() => BottomBar(), transition: Transition.rightToLeft);
-
       }
-
-    } catch (e) {
-      showCustomSnackBar(
-        context: context,
-        errorMessage: "Failed to update location: $e",
-      );
-    } finally {
-      isLoading.value = false;
     }
   }
 
@@ -142,11 +124,11 @@ class LocationAccessController extends GetxController {
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              await Geolocator.openLocationSettings();
+              await Geolocator.openLocationSettings(); // Opens device GPS settings
             },
             child: Text(
               "Open Settings",
-              style: CommonTextStyles.bold16?.copyWith(
+              style: CommonTextStyles.bold16.copyWith(
                 color: CommonColors.primaryColor,
               ),
             ),
@@ -155,5 +137,68 @@ class LocationAccessController extends GetxController {
       ),
     );
   }
-}
 
+  Future<List<String>> searchPlaces(String input) async {
+    final url =
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&components=country:in&radius=3000&key=${AppConstants.MAP_KEY}";
+
+    final response = await http.get(Uri.parse(url));
+    debugPrint("searchPlaces  ${response.body}");
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final predictions = data["predictions"] as List;
+      return predictions.map((p) => p["description"] as String).toList();
+    } else {
+      throw Exception("Failed to load places");
+    }
+  }
+
+  Future<void> getAddress(double lat, double lng) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+
+      Placemark place = placemarks[0];
+      currentLocation =
+          "${place.name}, ${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
+
+      debugPrint("currentLocation $currentLocation");
+    } catch (e) {
+      debugPrint("currentLocation $e");
+    }
+  }
+
+  Future<LatLng?> getLatLngFromAddress(String address) async {
+    try {
+      List<Location> locations = await locationFromAddress(address);
+      if (locations.isNotEmpty) {
+        double latitude = locations.first.latitude;
+        double longitude = locations.first.longitude;
+        return LatLng(latitude, longitude);
+      } else {
+        debugPrint("No location found for this address.");
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
+    return null;
+  }
+
+  Future<void> updateLocationApi({
+    required LatLng position,
+    required BuildContext context,
+  }) async {
+    isLoading.value = true;
+    final data = await repository
+        .updateUserLocationApi(preferences?.getString('token') ?? "", {
+          'latitude': position.latitude,
+          'longitude': position.longitude,
+          'address': currentLocation,
+        });
+    showCustomSnackBar(context: context, errorMessage: data.message ?? "");
+    if (data.status == true) {
+      preferences?.setBool("locationUpdated", true);
+      Get.offAll(() => BottomBar(), transition: Transition.rightToLeft);
+    }
+    isLoading.value = false;
+  }
+}

@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -5,11 +6,9 @@ import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/presentation/pages/Earnings/screens/withdraw.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 import '../controller/earnings_controller.dart';
 import '../model/Monthly_model.dart';
-import '../model/earnings_model.dart' show CompletedServicesPaid;
 
 class EarningsScreen extends StatefulWidget {
   const EarningsScreen({super.key});
@@ -88,56 +87,61 @@ class _EarningsScreenState extends State<EarningsScreen> {
                   (sum, item) => sum + double.tryParse(item.price ?? "0")!,
                 );
 
-
                 return Container(
-                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/blue.png'),
-                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Total Earnings",
-                            style: CommonTextStyles.regular14.copyWith(
-                              color: Colors.white,
+                  child: Stack(children: [
+                    Positioned.fill(child: Image.asset('assets/images/blue.png',
+                      fit: BoxFit.fill,)),
+                    Padding(padding: const EdgeInsets.only(
+                        top: 8, left: 12, right: 22, bottom: 10), child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Total Earnings",
+                              style: CommonTextStyles.regular14.copyWith(
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "₹${total.toStringAsFixed(0)}",
-                            style: CommonTextStyles.medium24.copyWith(
-                              color: Colors.white,
+                            const SizedBox(height: 4),
+                            Text(
+                              "₹${total.toStringAsFixed(0)}",
+                              style: CommonTextStyles.medium24.copyWith(
+                                color: Colors.white,fontSize: 20
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          CommonButton(
-                            borderRadius: 3,
-                            width: 90,
-                            height: 30,
-                            text: "Withdraw",
-                            backgroundColor: Colors.white,
-                            textColor: Colors.deepPurple,
-                            borderColor: Colors.white,
-                            onTap: () {
-                              Get.to(() =>  WithdrawScreen(totalEarnings: total.toStringAsFixed(0),));
-                            },
-                          ),
-                        ],
-                      ),
-                      Image.asset(
-                        'assets/images/coin.png',
-                        width: 55,
-                        height: 55,
-                      ),
-                    ],
-                  ),
+                            const SizedBox(height: 10),
+                            CommonButton(
+                              borderRadius: 3,
+                              width: 100,
+                              height: 30,
+                              text: "Withdraw",
+                              backgroundColor: Colors.white,
+                              textColor: Colors.deepPurple,
+                              borderColor: Colors.white,
+                              onTap: () {
+                                Get.to(() =>
+                                    WithdrawScreen(
+                                      totalEarnings: total.toStringAsFixed(
+                                          0),));
+                              },
+                            ),
+                          ],
+                        ),
+                        Image.asset(
+                          'assets/images/coin.png',
+                          width: 55,
+                          height: 55,
+                        ),
+                      ],
+                    ),),
+                  ],
+                  )
+                  ,
                 );
               }),
               const SizedBox(height: 20),

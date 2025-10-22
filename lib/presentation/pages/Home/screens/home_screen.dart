@@ -211,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTab(String title, int index) {
     final isSelected = selectedTab == index;
 
-    return GestureDetector(
+    return Expanded(child: GestureDetector(
       onTap: () {
         setState(() {
           selectedTab = index;
@@ -230,9 +230,9 @@ class _HomeScreenState extends State<HomeScreen> {
           title,
           style: CommonTextStyles.regular16.copyWith(
             color: isSelected ? CommonColors.primaryColor : CommonColors.black,
-          ),
+          ),textAlign: TextAlign.center,
         ),
-      ),
+      ),),
     );
   }
 
