@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1070795513033",
+    "project_id": "magicalwalls-9b305",
+    "storage_bucket": "magicalwalls-9b305.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070795513033:android:4bf98d4a2fd214af53c118",
+        "android_client_info": {
+          "package_name": "com.example.magical_walls"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgEjXPqFRR7SHXho9Cknf-xo8W_C_Qi5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070795513033:android:c2f75ba94318fe3a53c118",
+        "android_client_info": {
+          "package_name": "com.example.magical_walls_user"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgEjXPqFRR7SHXho9Cknf-xo8W_C_Qi5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
