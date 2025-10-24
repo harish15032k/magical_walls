@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:magical_walls/core/utils/utils.dart';
 import 'package:magical_walls/presentation/pages/Home/controller/home_controller.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -197,6 +198,11 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                               children: [
                                 Expanded(
                                   child: CommonButton(
+                                    onTap: () {
+                                      Utils.makePhoneCall(
+                                          phoneNumber: widget.job['phone'],
+                                          context: context);
+                                    },
                                     isimageneed: true,
                                     imagefile: 'assets/images/call-calling.png',
                                     text: 'Call Customer',

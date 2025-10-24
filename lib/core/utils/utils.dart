@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const Duration errorMessageDisplayDuration = Duration(milliseconds: 3000);
 Future<void> showCustomSnackBar({
@@ -105,5 +106,20 @@ class _ErrorMessageOverlayContainerState
         );;
       },
     );
+  }
+}
+
+
+class Utils {
+  static Future<void> makePhoneCall({required String phoneNumber, required
+  BuildContext context}) async {
+    final Uri callUri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(callUri)) {
+      await launchUrl(callUri);
+    } else {
+      if(context.mounted == true) {
+        showCustomSnackBar(context: context, errorMessage: "Try Again");
+      }
+    }
   }
 }

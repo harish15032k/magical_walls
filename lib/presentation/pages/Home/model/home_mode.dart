@@ -82,7 +82,7 @@ class Datum {
     address: json["address"] == null ? null : Address.fromMap(json["address"]),
     status: json["status"],
     toolsRequired: json["tools_required"] == null ? [] : List<dynamic>.from(json["tools_required"]!.map((x) => x)),
-    servicePrice: json["service_price"],
+    servicePrice: "${json["service_price"]}",
     assignedTechnician: json["assigned_technician"],
   );
 
