@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:developer' as dev;
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart' show PlatformFile;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:magical_walls/core/utils/utils.dart';
 import 'package:magical_walls/data/urls/api_urls.dart';
@@ -16,8 +15,7 @@ import 'package:magical_walls/presentation/pages/Auth/model/service_listmodel.da
 import 'package:magical_walls/presentation/pages/Auth/repository/auth_repository.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/profile_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as p;
+
 import '../../Home/screens/bottom_bar.dart';
 import '../model/verify_otp_model.dart' hide Data;
 import '../screens/kyc/service_add.dart';
@@ -40,8 +38,10 @@ class AuthController extends GetxController {
   String? selectedAadhaarFile;
   final TextEditingController accountHolderName = TextEditingController();
   final TextEditingController bank = TextEditingController();
-  final TextEditingController accountNumber = TextEditingController();
-  final TextEditingController ifscCode = TextEditingController();
+  final TextEditingController accountNumber = TextEditingController(),
+      confirmationAccountNumber = TextEditingController();
+  final TextEditingController ifscCode = TextEditingController(),
+      confirmationIfscCode = TextEditingController();
   bool isTermsAccepted = false;
   var kycStatus = ''.obs;
 

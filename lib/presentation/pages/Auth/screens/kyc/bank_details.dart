@@ -4,7 +4,6 @@ import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/core/utils/utils.dart';
 import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller.dart';
-import 'package:magical_walls/presentation/pages/Auth/screens/kyc/profile_review.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/common_textfield.dart';
 
@@ -75,8 +74,22 @@ class _BankDetailsState extends State<BankDetails> {
                 ),
                 SizedBox(height: Get.height * 0.020),
                 CommonTextField(
+                  controller: controller.confirmationAccountNumber,
+                  label: 'Reconfirmation Account Number',
+                  hintText: '',
+                  isRequired: true,
+                ),
+                SizedBox(height: Get.height * 0.020),
+                CommonTextField(
                   controller: controller.ifscCode,
                   label: 'IFSC Code',
+                  hintText: '',
+                  isRequired: true,
+                ),
+                SizedBox(height: Get.height * 0.020),
+                CommonTextField(
+                  controller: controller.confirmationIfscCode,
+                  label: 'Reconfirmation IFSC Code',
                   hintText: '',
                   isRequired: true,
                 ),
@@ -133,10 +146,24 @@ class _BankDetailsState extends State<BankDetails> {
               if (controller.accountHolderName.text.isEmpty ||
                   controller.accountNumber.text.isEmpty ||
                   controller.ifscCode.text.isEmpty ||
+                  controller.confirmationAccountNumber.text.isEmpty ||
+                  controller.confirmationIfscCode.text.isEmpty ||
                   !controller.isTermsAccepted) {
                 showCustomSnackBar(
                   context: context,
                   errorMessage: "Fill all fields and accept terms",
+                );
+              } else if (controller.accountNumber.text !=
+                  controller.confirmationAccountNumber.text) {
+                showCustomSnackBar(
+                  context: context,
+                  errorMessage: "Account number mismatch",
+                );
+              } else if (controller.ifscCode.text !=
+                  controller.confirmationIfscCode.text) {
+                showCustomSnackBar(
+                  context: context,
+                  errorMessage: "IFSC code mismatch",
                 );
               } else {
                  controller.kycCompleted(context);
