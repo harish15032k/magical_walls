@@ -9,8 +9,8 @@ import 'package:magical_walls/presentation/widgets/common_box.dart';
 import 'package:magical_walls/presentation/widgets/shimmer.dart';
 
 import '../../profile/screens/profile_edit.dart';
-import '../model/home_mode.dart';
 import '../model/Completed_order_model.dart' as co;
+import '../model/home_mode.dart';
 import 'order_viewdetails.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -79,10 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     'phone': job.customerPhoneNumber ?? '',
                     'duration': job.duration ?? '',
                     'tools': job.toolsRequired ?? [],
-                    'service_price': job.servicePrice ?? '',
+                    'service_price': job.totalServicePrice ?? '',
                     'assigned_technician': job.assignedTechnician ?? '',
+                    'quantity': job.quantity
                   },
-                  isaccept: false,
+                  isaccept: job.isAcceptedByYou == true, isOngoing: job
+                    .status == 'ongoing'
                 ),
                 transition: Transition.zoom,
               );
@@ -120,16 +122,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         'phone': job.customerPhoneNumber ?? '',
                         'duration': job.duration ?? '',
                         'tools': job.toolsRequired ?? [],
-                        'service_price': job.servicePrice ?? '',
+                        'service_price': job.totalServicePrice ?? '',
                         'assigned_technician': job.assignedTechnician ?? '',
+                        'quantity': job.quantity
                       },
-                      isaccept: job.isAcceptedByYou,
+                          isaccept: job.isAcceptedByYou == true, isOngoing: job
+                            .status == 'ongoing',
                     ),
                     transition: Transition.zoom,
                   );
                 },
                 onAccept: () async {
-                  homeController.acceptService(
+                  await homeController.acceptService(
                     job.bookingId,
                     'accept',
                     context,
@@ -148,10 +152,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         'phone': job.customerPhoneNumber ?? '',
                         'duration': job.duration ?? '',
                         'tools': job.toolsRequired ?? [],
-                        'service_price': job.servicePrice ?? '',
+                        'service_price': job.totalServicePrice ?? '',
                         'assigned_technician': job.assignedTechnician ?? '',
+                        'quantity': job.quantity
                       },
-                      isaccept: job.isAcceptedByYou,
+                      isaccept: homeController.isAcceptedByYou.value,
                     ),
                     transition: Transition.zoom,
                   );
@@ -205,14 +210,23 @@ class _HomeScreenState extends State<HomeScreen> {
           return GestureDetector(
             onTap: () {
               // Get.to(
-              //       () => JobDetailsScreen(job: {
-              //     'id': job.bookingId.toString(),
-              //     'type': job.serviceType ?? '',
-              //     'customer': job.customerName?? '',
-              //     'date': job.bookingDate?.toString() ?? '',
-              //     'timeSlot': job.timeSlot?.toString() ?? '',
-              //     'address': job.address?.address ?? '',
-              //   }),
+              //       () => JobDetailsScreen(
+              //     job: {
+              //       'id': job.bookingId.toString(),
+              //       'type': job.serviceType ?? '',
+              //       'customer': job.customerName ?? '',
+              //       'date': job.bookingDate?.toString() ?? '',
+              //       'timeSlot': job.timeSlot?.toString() ?? '',
+              //       'address': job.address?.address ?? '',
+              //       'phone': job.customerPhoneNumber ?? '',
+              //       'duration': job.duration ?? '',
+              //       'tools': job.toolsRequired ?? [],
+              //       'service_price': job.totalServicePrice ?? '',
+              //       'assigned_technician': job.assignedTechnician ?? '',
+              //       'quantity': job.quantity
+              //     },
+              //     isaccept: false,
+              //   ),
               //   transition: Transition.zoom,
               // );
             },
@@ -224,6 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
               date: job.bookingDate != null ? job.bookingDate.toString() : '',
               timeSlot: job.timeSlot?.toString() ?? '',
               address: job.timeSlot ?? '',
+              orderCompletedRes: job,
             ),
           );
         },

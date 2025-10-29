@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:magical_walls/presentation/pages/Home/model/Completed_order_model.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text.dart';
-import '../../../widgets/common_button.dart';
 
 class CompletedJobScreen extends StatefulWidget {
+  final Datum? orderCompletedRes;
 
-  CompletedJobScreen({super.key, });
+  const CompletedJobScreen({super.key, this.orderCompletedRes});
 
   @override
   State<CompletedJobScreen> createState() => _CompletedJobScreenState();
@@ -87,21 +89,21 @@ class _CompletedJobScreenState extends State<CompletedJobScreen> {
                         const SizedBox(height: 12),
                         _twoColumnRow(
                           'Service Type:',
-                          'AC Repair - Gas Refill',
+                          widget.orderCompletedRes?.serviceType ?? "",
                           'Booking ID:',
-                          "#BK034523",
+                          "#BK${widget.orderCompletedRes?.bookingId ?? ""}",
                         ),
                         const SizedBox(height: 12),
                         _twoColumnRow(
                           'Date:',
-                          '25 July 2025',
+                          widget.orderCompletedRes?.bookingDate ?? "",
                           'Time Slot:',
-                          '10 AM - 12 PM',
+                          widget.orderCompletedRes?.timeSlot ?? "",
                         ),
                         const SizedBox(height: 12),
                         _twoColumnRow(
                           'Completed On:',
-                          '26 July 2025 - 03:45 PM',
+                          widget.orderCompletedRes?.completedOn ?? "",
                           '',
                           '',
                         ),
@@ -116,9 +118,11 @@ class _CompletedJobScreenState extends State<CompletedJobScreen> {
                         const SizedBox(height: 12),
                         _twoColumnRow(
                           'Name:',
-                          'Ravi Kumar',
+                          widget.orderCompletedRes?.customerInformation?.name ??
+                              "",
                           'Phone Number:',
-                          '+91 9384772736',
+                          widget.orderCompletedRes?.customerInformation
+                              ?.phoneNumber ?? "",
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -128,7 +132,11 @@ class _CompletedJobScreenState extends State<CompletedJobScreen> {
                           ),
                         ),
                         Text(
-                          'Flat 202, Lotus Apartments, Chennai',
+                          "${ widget.orderCompletedRes?.customerInformation
+                              ?.address?.address ?? ""},${ widget
+                              .orderCompletedRes?.customerInformation?.address
+                              ?.city ?? ""},${ widget.orderCompletedRes
+                              ?.customerInformation?.address?.pinCode ?? ""}",
                           style: CommonTextStyles.medium14,
                         ),
                         const SizedBox(height: 16),
@@ -142,62 +150,64 @@ class _CompletedJobScreenState extends State<CompletedJobScreen> {
                         const SizedBox(height: 12),
                         _twoColumnRow(
                           'Total Amount:',
-                          '₹1200',
+                          '₹ ${widget.orderCompletedRes?.paymentInfo
+                              ?.grantAmount ?? ""}',
                           'Payment Mode:',
-                          'UPI',
+                          widget.orderCompletedRes?.paymentInfo?.paymentMode ??
+                              "",
                         ),
                         const SizedBox(height: 12),
                         _twoColumnRow(
                           'Payment Status:',
-                          'Paid',
+                          widget.orderCompletedRes?.paymentInfo
+                              ?.paymentStatus ?? "",
                           '',
                           '',
                         ),
                         const SizedBox(height: 16),
                         Divider(color: CommonColors.textFieldGrey),
-            
-
                         Text(
                           'Technician Notes',
                           style: CommonTextStyles.medium16,
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Gas refill for split AC.',
+                          widget.orderCompletedRes?.serviceType ?? "",
                           style: CommonTextStyles.regular16,
                         ),
                         Text(
-                          'Replaced low gas and tested cooling. Customer satisfied.',
+                          widget.orderCompletedRes?.technicianNotes ?? "",
                           style: CommonTextStyles.regular12.copyWith(color: CommonColors.secondary),
                         ),
                         const SizedBox(height: 16),
-            
+                        ListView.separated(separatorBuilder: (c, p) =>
+                        const SizedBox(height: 5,),
+                            itemCount: widget.orderCompletedRes?.workChecklist
+                                ?.length ?? 0,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (c, p) {
+                              WorkChecklist? work = widget.orderCompletedRes
+                                  ?.workChecklist?[p];
+                              return Text('• ${work?.name ?? ""}',
+                                style: CommonTextStyles.regular14,);
+                            }),
 
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('• Inspect the AC Unit',style: CommonTextStyles.regular14,),
-                            SizedBox(height: 5,),
-                            Text('• Identify Gas Leakage',style: CommonTextStyles.regular14,),
-                            SizedBox(height: 5,),
-                            Text('• Refill Gas Cylinder',style: CommonTextStyles.regular14,),
-                            SizedBox(height: 5,),
 
-                            Text('• Test Cooling',style: CommonTextStyles.regular14,),
-                            SizedBox(height: 5,),
-                            Text('• Customer Approval',style: CommonTextStyles.regular14,),
-                          ]
-                        ),
                         const SizedBox(height: 20),
-            
 
-                        Image.asset(
-                          'assets/images/ac.png',
-                          height: 80,
+
+                        Image.network(
+                          widget.orderCompletedRes?.uploadedPhotos?.first ?? "",
+                          height: 80, errorBuilder: (c, e, t) => SizedBox(),
                         ),
                         const SizedBox(height: 16),
-            
 
+                        if(widget.orderCompletedRes
+                            ?.customerRatingFeedback?.ratingText?.isNotEmpty ==
+                            true)
+                          Column(crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                         Text(
                           'Customer Rating & Feedback',
                           style: CommonTextStyles.medium16,
@@ -205,20 +215,31 @@ class _CompletedJobScreenState extends State<CompletedJobScreen> {
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 20),
-                            const Icon(Icons.star, color: Colors.amber, size: 20),
-                            const Icon(Icons.star, color: Colors.amber, size: 20),
-                            const Icon(Icons.star, color: Colors.amber, size: 20),
-                            const Icon(Icons.star, color: Colors.amber, size: 20),
+                            Row(
+                              children: List.generate(5, (i) =>
+                                  Icon(Icons.star,
+                                      color: i < double.tryParse(
+                                          widget.orderCompletedRes
+                                              ?.customerRatingFeedback
+                                              ?.ratingText
+                                              ?.first.rating ?? "0")! ? Colors
+                                          .amber : Colors.grey,
+                                      size: 20),),),
                             const SizedBox(width: 10),
-                            Text('5/5', style: CommonTextStyles.medium20),
+                            Text('${widget.orderCompletedRes
+                                ?.customerRatingFeedback?.ratingText
+                                ?.first.rating ?? "0"}/5',
+                                style: CommonTextStyles.medium20),
                           ],
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Quick and professional service. Thank you!',
+                          widget.orderCompletedRes
+                              ?.customerRatingFeedback?.ratingText
+                              ?.first.review ?? "",
                           style: CommonTextStyles.regular14.copyWith(color: CommonColors.secondary),
                         ),
+                            ],),
                       ],
                     ),
                   ),

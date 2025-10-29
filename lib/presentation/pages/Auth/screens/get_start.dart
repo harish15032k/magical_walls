@@ -19,7 +19,7 @@ class _GetStartState extends State<GetStart> {
       backgroundColor: CommonColors.white,
       body: SafeArea(
         child: ListView(
-          padding: EdgeInsets.only(top: 0),
+          padding: EdgeInsets.only(top: 0,left: 19,right: 19),
           children: [
             Container(
               color: Colors.amber,
@@ -38,15 +38,15 @@ class _GetStartState extends State<GetStart> {
             SizedBox(height: Get.height * 0.018),
             Center(
               child: Text(
-                'We’re excited to have you on board! Let’s get you set \n   up to start accepting service bookings and grow \n                          your business with us.',
+                'We’re excited to have you on board! Let’s get you set up to start accepting service bookings and grow your business with us.',
                 style: CommonTextStyles.regular16.copyWith(
                   color: CommonColors.secondary,
-                ),
+                ),textAlign: TextAlign.center,
               ),
             ),
             SizedBox(height: Get.height * 0.13),
             Padding(
-              padding: const EdgeInsets.all(18.0),
+              padding: const EdgeInsets.symmetric(vertical: 18.0),
               child: CommonButton(
                 backgroundColor: CommonColors.primaryColor,
                 textColor: CommonColors.white,

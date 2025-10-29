@@ -8,13 +8,12 @@ import '../../../../core/constants/app_text.dart';
 import '../../../widgets/common_button.dart';
 
 class JobDetailsScreen extends StatefulWidget {
-  final Map<String, dynamic?> job;
-  late bool isaccept;
+  final Map<String, dynamic> job;
+  bool isaccept, isOngoing;
 
 
-
-
-  JobDetailsScreen({super.key, required this.job, this.isaccept = false});
+  JobDetailsScreen(
+      {super.key, required this.job, this.isaccept = false, this.isOngoing = false});
 
   @override
   State<JobDetailsScreen> createState() => _JobDetailsScreenState();
@@ -27,14 +26,12 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
     super.initState();
   }
-
-  HomeController homeController = Get.put(HomeController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: CommonColors.white,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +147,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       const SizedBox(height: 12),
                       _twoColumnRow(
                         'Task Name:',
-                        'Gas Refill',
+                        widget.job['type'],
                         'Duration:',
                         widget.job['duration'],
                       ),
@@ -165,9 +162,9 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       const SizedBox(height: 12),
                       _twoColumnRow(
                         'Service Price:',
-                        '₹${widget.job['service_price']}',
-                        '',
-                        '',
+                        '₹ ${widget.job['service_price']}',
+                        'Quantity',
+                        widget.job['quantity'] ?? "",
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -177,7 +174,19 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-
+                      widget.isOngoing ? CommonButton(
+                        onTap: () {
+                          Utils.makePhoneCall(
+                              phoneNumber: widget.job['phone'],
+                              context: context);
+                        },
+                        isimageneed: true,
+                        imagefile: 'assets/images/call-calling.png',
+                        text: 'Call Customer',
+                        backgroundColor: Colors.transparent,
+                        textColor: CommonColors.purple,
+                        borderColor: CommonColors.purple,
+                      )  :
                       widget.isaccept == false
                           ? CommonButton(
                               backgroundColor: CommonColors.primaryColor,

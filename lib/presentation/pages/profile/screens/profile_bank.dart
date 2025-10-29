@@ -130,6 +130,7 @@ class BankDetailsScreen extends StatelessWidget {
           ),
         ),
         SizedBox(width: 100),
+        if(rightLabel.isNotEmpty || rightValue.isNotEmpty)
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -45,8 +45,16 @@ class Datum {
   PaymentInfo? paymentInfo;
   String? technicianNotes;
   List<WorkChecklist>? workChecklist;
-  dynamic uploadedPhotos;
+  List<String?>? uploadedPhotos;
   CustomerRatingFeedback? customerRatingFeedback;
+  String? customerName;
+  String? customerPhoneNumber;
+  Address? address;
+  String? status;
+  List<dynamic>? toolsRequired;
+  String? servicePrice, totalServicePrice, quantity;
+  String? assignedTechnician;
+  bool? isAcceptedByYou;
 
   Datum({
     this.bookingId,
@@ -56,7 +64,14 @@ class Datum {
     this.endTime,
     this.timeSlot,
     this.duration,
-    this.completedOn,
+    this.customerName,
+    this.customerPhoneNumber,
+    this.address,
+    this.status,
+    this.toolsRequired,
+    this.servicePrice,
+    this.assignedTechnician,
+    this.isAcceptedByYou, this.totalServicePrice, this.quantity, this.completedOn,
     this.customerInformation,
     this.paymentInfo,
     this.technicianNotes,
@@ -70,20 +85,43 @@ class Datum {
   String toJson() => json.encode(toMap());
 
   factory Datum.fromMap(Map<String, dynamic> json) => Datum(
-    bookingId: json["booking_id"],
-    serviceType: json["service_type"],
-    bookingDate: json["booking_date"],
-    startTime: json["start_time"],
-    endTime: json["end_time"],
-    timeSlot: json["time_slot"],
-    duration: json["duration"],
-    completedOn: json["completed_on"],
-    customerInformation: json["customer_information"] == null ? null : CustomerInformation.fromMap(json["customer_information"]),
-    paymentInfo: json["payment_info"] == null ? null : PaymentInfo.fromMap(json["payment_info"]),
-    technicianNotes: json["technician_notes"],
-    workChecklist: json["work_checklist"] == null ? [] : List<WorkChecklist>.from(json["work_checklist"]!.map((x) => WorkChecklist.fromMap(x))),
-    uploadedPhotos: json["uploaded_photos"],
-    customerRatingFeedback: json["customer_rating_feedback"] == null ? null : CustomerRatingFeedback.fromMap(json["customer_rating_feedback"]),
+      bookingId: json["booking_id"],
+      serviceType: json["service_type"],
+      bookingDate: json["booking_date"],
+      startTime: json["start_time"],
+      endTime: json["end_time"],
+      timeSlot: json["time_slot"],
+      duration: json["duration"],
+      customerName: json["customer_name"],
+      customerPhoneNumber: json["customer_phone_number"],
+      address: json["address"] == null ? null : Address.fromMap(
+          json["address"]),
+      status: json["status"],
+      toolsRequired: json["tools_required"] == null ? [] : List<dynamic>.from(
+          json["tools_required"]!.map((x) => x)),
+      servicePrice: "${json["service_price"]}",
+      assignedTechnician: json["assigned_technician"],
+      isAcceptedByYou: json['isAcceptedByYou'],
+      completedOn: json["completed_on"],
+      customerInformation: json["customer_information"] == null
+          ? null
+          : CustomerInformation.fromMap(json["customer_information"]),
+      paymentInfo: json["payment_info"] == null ? null : PaymentInfo.fromMap(
+          json["payment_info"]),
+      technicianNotes: json["technician_notes"],
+      workChecklist: json["work_checklist"] == null ? [] : List<
+          WorkChecklist>.from(
+          json["work_checklist"]!.map((x) => WorkChecklist.fromMap(x))),
+      uploadedPhotos:  (json['uploaded_photos'] as List?)?.map((e) => e.toString()).toList(),
+      customerRatingFeedback: json["customer_rating_feedback"] == null
+          ? null
+          : CustomerRatingFeedback.fromMap(json["customer_rating_feedback"]),
+
+
+      totalServicePrice: double
+          .tryParse("${json['total_service_price']}")
+          ?.toStringAsFixed(2) ?? "${json['total_service_price']}",
+      quantity: "${json['quantity']}"
   );
 
   Map<String, dynamic> toMap() => {
@@ -94,6 +132,17 @@ class Datum {
     "end_time": endTime,
     "time_slot": timeSlot,
     "duration": duration,
+    "customer_name": customerName,
+    "customer_phone_number": customerPhoneNumber,
+    "address": address?.toMap(),
+    "status": status,
+    "tools_required": toolsRequired == null ? [] : List<dynamic>.from(
+        toolsRequired!.map((x) => x)),
+    "service_price": servicePrice,
+    "assigned_technician": assignedTechnician,
+    'isAcceptedByYou': isAcceptedByYou,
+    'total_service_price': totalServicePrice,
+    'quantity': quantity,
     "completed_on": completedOn,
     "customer_information": customerInformation?.toMap(),
     "payment_info": paymentInfo?.toMap(),
@@ -101,8 +150,10 @@ class Datum {
     "work_checklist": workChecklist == null ? [] : List<dynamic>.from(workChecklist!.map((x) => x.toMap())),
     "uploaded_photos": uploadedPhotos,
     "customer_rating_feedback": customerRatingFeedback?.toMap(),
+
   };
 }
+
 
 class CustomerInformation {
   String? name;
@@ -237,12 +288,12 @@ class RatingText {
 }
 
 class PaymentInfo {
-  String? totalAmount;
+  String? totalAmount,grantAmount;
   String? paymentMode;
   String? paymentStatus;
 
   PaymentInfo({
-    this.totalAmount,
+    this.totalAmount,this.grantAmount,
     this.paymentMode,
     this.paymentStatus,
   });
@@ -255,12 +306,14 @@ class PaymentInfo {
     totalAmount: json["total_amount"],
     paymentMode: json["payment_mode"],
     paymentStatus: json["payment_status"],
+    grantAmount: "${json['grant_amount']}",
   );
 
   Map<String, dynamic> toMap() => {
     "total_amount": totalAmount,
     "payment_mode": paymentMode,
     "payment_status": paymentStatus,
+    'grant_amount' : grantAmount
   };
 }
 

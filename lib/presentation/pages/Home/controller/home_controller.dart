@@ -199,11 +199,10 @@ class HomeController extends GetxController {
       };
       final res = await repo.acceptOrder(token, request);
       if (res['status'] == true) {
-        isAcceptedByYou.value= res['isAcceptedByYou'];
+        isAcceptedByYou.value=status == 'accept' ;
         if (status == 'reject') {
           upcomingOrders.removeAt(index!);
         }
-
         await Future.delayed(Duration(milliseconds: 300));
         getOrderList("upcoming");
         showCustomSnackBar(context: context, errorMessage: res['message']);

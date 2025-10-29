@@ -45,9 +45,9 @@ class Datum {
   Address? address;
   String? status;
   List<dynamic>? toolsRequired;
-  String? servicePrice;
+  String? servicePrice, totalServicePrice, quantity;
   String? assignedTechnician;
-  dynamic? isAcceptedByYou;
+  bool? isAcceptedByYou;
 
   Datum({
     this.bookingId,
@@ -64,7 +64,7 @@ class Datum {
     this.toolsRequired,
     this.servicePrice,
     this.assignedTechnician,
-    this.isAcceptedByYou
+    this.isAcceptedByYou, this.totalServicePrice, this.quantity
   });
 
   factory Datum.fromJson(String str) => Datum.fromMap(json.decode(str));
@@ -87,6 +87,9 @@ class Datum {
     servicePrice: "${json["service_price"]}",
     assignedTechnician: json["assigned_technician"],
     isAcceptedByYou:json['isAcceptedByYou']
+      ,
+      totalServicePrice: double.tryParse("${json['total_service_price']}")?.toStringAsFixed(2) ?? "${json['total_service_price']}",
+      quantity: "${json['quantity']}"
   );
 
   Map<String, dynamic> toMap() => {
@@ -104,7 +107,9 @@ class Datum {
     "tools_required": toolsRequired == null ? [] : List<dynamic>.from(toolsRequired!.map((x) => x)),
     "service_price": servicePrice,
     "assigned_technician": assignedTechnician,
-    'isAcceptedByYou':isAcceptedByYou
+    'isAcceptedByYou': isAcceptedByYou,
+    'total_service_price': totalServicePrice,
+    'quantity': quantity
   };
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
+import 'package:magical_walls/presentation/pages/Home/model/Completed_order_model.dart';
 import 'package:magical_walls/presentation/pages/Home/screens/markas_completed_screen.dart';
 
 import '../pages/Home/screens/view_summary.dart';
@@ -21,7 +22,7 @@ class CommonBox extends StatelessWidget {
   final bool? isLoadingReject;
   final bool? isAcceptedByYou;
   final VoidCallback? isAcceptOnTap;
-
+  final Datum? orderCompletedRes;
   const CommonBox({
     super.key,
     required this.jobId,
@@ -36,8 +37,8 @@ class CommonBox extends StatelessWidget {
     this.isLoadingAccept,
     this.isLoadingReject,
     this.isAcceptedByYou,
-    this.isAcceptOnTap
-  });
+    this.isAcceptOnTap,
+    this.orderCompletedRes});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +76,7 @@ class CommonBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
+              Expanded(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -86,8 +87,8 @@ class CommonBox extends StatelessWidget {
                   ),
                   Text(customerName, style: CommonTextStyles.medium14),
                 ],
-              ),
-              Column(
+              ),),
+              Expanded(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -99,8 +100,8 @@ class CommonBox extends StatelessWidget {
                   Text(date, style: CommonTextStyles.medium14),
                 ],
               ),
-
-              Column(
+              ),
+              Expanded(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -111,7 +112,7 @@ class CommonBox extends StatelessWidget {
                   ),
                   Text(timeSlot, style: CommonTextStyles.regular14),
                 ],
-              ),
+              ),),
             ],
           ),
           const SizedBox(height: 4),
@@ -129,7 +130,9 @@ class CommonBox extends StatelessWidget {
           (tab == 'ongoing' || tab == 'completed')
               ? CommonButton(
             onTap: (){
-              tab=='ongoing'?Get.to(()=>MarkAsCompleted(jobType: jobType,id: jobId,)):Get.to(()=>CompletedJobScreen());
+              tab == 'ongoing' ? Get.to(() =>
+                  MarkAsCompleted(jobType: jobType, id: jobId,)) : Get.to(() =>
+                  CompletedJobScreen(orderCompletedRes: orderCompletedRes,));
             },
                   backgroundColor: CommonColors.primaryColor,
                   textColor: CommonColors.white,

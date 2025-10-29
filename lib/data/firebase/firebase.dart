@@ -1,13 +1,14 @@
 import 'dart:developer';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../main.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text.dart';
+import '../../main.dart';
 import '../../presentation/pages/Home/controller/home_controller.dart';
 import '../../presentation/pages/Home/screens/order_viewdetails.dart';
 import '../../presentation/widgets/common_button.dart';
@@ -88,6 +89,7 @@ void showNewServiceRequestPopup(BuildContext context, Map<String, dynamic> data)
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
+      debugPrint("JobDetailsScreen $data");
       return Dialog(
         insetPadding: const EdgeInsets.only(left: 16, right: 16),
         shape: RoundedRectangleBorder(
@@ -96,21 +98,29 @@ void showNewServiceRequestPopup(BuildContext context, Map<String, dynamic> data)
         child: Stack(
           children: [
             GestureDetector( onTap: (){
-              debugPrint("JobDetailsScreen $data");
               Get.to(()=>JobDetailsScreen(
-                // job: {
-                //   'id': data['booking_service_id'].toString(),
-                //   'type': data['service_name'] ?? '',
-                //   'customer': job.customerName ?? '',
-                //   'date':  data['booking_date'].toString() ?? '',
-                //   'timeSlot':  data['time_slot'].toString() ?? '',
-                //   'address': job.address?.address ?? '',
-                //   'phone': job.customerPhoneNumber ?? '',
-                //   'duration': job.duration ?? '',
-                //   'tools': job.toolsRequired ?? [],
-                //   'service_price': job.servicePrice ?? '',
-                //   'assigned_technician': job.assignedTechnician ?? '',
-                // },
+                job: {
+                  'id': data['booking_service_id'].toString(),
+                  'type': data['service_name'] ?? '',
+                  'customer': data['customerName'] ?? data['customer_name'] ??
+                      '',
+                  'date': data['booking_date'].toString() ?? '',
+                  'timeSlot': data['time_slot'].toString() ?? '',
+                  'address': data['location'] ?? '',
+                  'phone': data['customerPhone'] ??
+                      data['customer_phone_number'] ?? '',
+                  'duration': data['durationTime'] ?? data['duration'] ?? '',
+                  'tools': data['toolsRequired'] is String
+                      ? data['toolsRequired'].split(',')
+                      : data['toolsRequired'] is List
+                      ? data['tools_required'] ?? data['toolsRequired'] ?? []
+                      : [],
+                  'service_price': data['totalPrice'] ??
+                      "${data['total_service_price']}" ?? '',
+                  'assigned_technician': data['assignedTechnician'] ??
+                      data['assigned_technician'] ?? '',
+                  'quantity': "${data['quantity']}"
+                },
                 isaccept: false,
               ),transition: Transition.rightToLeft);
 
@@ -161,7 +171,7 @@ void showNewServiceRequestPopup(BuildContext context, Map<String, dynamic> data)
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Row(
+                    Row(spacing: 10,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                      Expanded(child:    Column(
@@ -230,27 +240,39 @@ void showNewServiceRequestPopup(BuildContext context, Map<String, dynamic> data)
                           child: CommonButton(
                             onTap: () async{
                               final  homeController = Get.find<HomeController>();
-
                          await     homeController.acceptService(
                                 data['booking_service_id'],
                                 'accept',
                                 context,
                                 index: 0,
                               );
+                              Get.back();
                               Get.to(()=>JobDetailsScreen(
-                                // job: {
-                                //   'id': data['booking_service_id'].toString(),
-                                //   'type': data['service_name'] ?? '',
-                                //   'customer': job.customerName ?? '',
-                                //   'date':  data['booking_date'].toString() ?? '',
-                                //   'timeSlot':  data['time_slot'].toString() ?? '',
-                                //   'address': job.address?.address ?? '',
-                                //   'phone': job.customerPhoneNumber ?? '',
-                                //   'duration': job.duration ?? '',
-                                //   'tools': job.toolsRequired ?? [],
-                                //   'service_price': job.servicePrice ?? '',
-                                //   'assigned_technician': job.assignedTechnician ?? '',
-                                // },
+                                job: {
+                                  'id': data['booking_service_id'].toString(),
+                                  'type': data['service_name'] ?? '',
+                                  'customer': data['customerName'] ??
+                                      data['customer_name'] ?? '',
+                                  'date': data['booking_date'].toString() ?? '',
+                                  'timeSlot': data['time_slot'].toString() ??
+                                      '',
+                                  'address': data['location'] ?? '',
+                                  'phone': data['customerPhone'] ??
+                                      data['customer_phone_number'] ?? '',
+                                  'duration': data['durationTime'] ??
+                                      data['duration'] ?? '',
+                                  'tools': data['toolsRequired'] is String
+                                      ? data['toolsRequired'].split(',')
+                                      : data['toolsRequired'] is List
+                                      ? data['tools_required'] ??
+                                      data['toolsRequired'] ?? []
+                                      : [],
+                                  'service_price': data['totalPrice'] ??
+                                      "${data['total_service_price']}" ?? '',
+                                  'assigned_technician': data['assignedTechnician'] ??
+                                      data['assigned_technician'] ?? '',
+                                  'quantity': "${data['quantity']}"
+                                },
                                 isaccept: homeController.isAcceptedByYou.value,
                               ),transition: Transition.rightToLeft);
                             },

@@ -94,7 +94,7 @@ class DocumentsScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.network(imagePath, width: 12),
+                    Image.asset("assets/images/tick.png", width: 12),
                     const SizedBox(width: 3),
                     Text(
                       "Verified",
@@ -106,13 +106,21 @@ class DocumentsScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(3),
-          child: Image.asset(
+        Container( width: 150,
+    height: 100,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(3)),
+          clipBehavior: Clip.hardEdge,
+          child: Image.network(
             imagePath,
             width: 150,
             height: 100,
-            fit: BoxFit.cover,
+            fit: BoxFit.cover, loadingBuilder: (c, l, w) {
+            if (w == null) {
+              return l;
+            }
+            return Center(child: CircularProgressIndicator(
+              color: CommonColors.primaryColor, strokeWidth: 2,),);
+          },
           ),
         ),
       ],
