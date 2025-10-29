@@ -21,6 +21,7 @@ class JobDetailsScreen extends StatefulWidget {
 }
 
 class _JobDetailsScreenState extends State<JobDetailsScreen> {
+  final HomeController homeController = Get.put(HomeController());
   @override
   void initState() {
 
@@ -182,14 +183,14 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                               backgroundColor: CommonColors.primaryColor,
                               textColor: CommonColors.white,
                               text: 'Accept',
-                              onTap: () {
-                                homeController.acceptService(
+                              onTap: ()async {
+                             await   homeController.acceptService(
                                   widget.job['id'],
                                   'accept',
                                   context,
                                 );
                                 setState(() {
-                                  widget.isaccept = true;
+                                  widget.isaccept =homeController.isAcceptedByYou.value ;
                                 });
                               },
                             )

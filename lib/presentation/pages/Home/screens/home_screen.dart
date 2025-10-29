@@ -82,12 +82,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     'service_price': job.servicePrice ?? '',
                     'assigned_technician': job.assignedTechnician ?? '',
                   },
+                  isaccept: false,
                 ),
                 transition: Transition.zoom,
               );
             },
             child: Obx(
               () => CommonBox(
+                isAcceptedByYou:job.isAcceptedByYou ,
                 tab: tabName,
                 jobId: job.bookingId?.toString() ?? '',
                 jobType: job.serviceType ?? '',
@@ -105,6 +107,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         .loadingRejectMap[job.bookingId.toString()]
                         ?.value ??
                     false,
+                isAcceptOnTap: (){
+                  Get.to(
+                        () => JobDetailsScreen(
+                      job: {
+                        'id': job.bookingId.toString(),
+                        'type': job.serviceType ?? '',
+                        'customer': job.customerName ?? '',
+                        'date': job.bookingDate?.toString() ?? '',
+                        'timeSlot': job.timeSlot?.toString() ?? '',
+                        'address': job.address?.address ?? '',
+                        'phone': job.customerPhoneNumber ?? '',
+                        'duration': job.duration ?? '',
+                        'tools': job.toolsRequired ?? [],
+                        'service_price': job.servicePrice ?? '',
+                        'assigned_technician': job.assignedTechnician ?? '',
+                      },
+                      isaccept: job.isAcceptedByYou,
+                    ),
+                    transition: Transition.zoom,
+                  );
+                },
                 onAccept: () async {
                   homeController.acceptService(
                     job.bookingId,
@@ -128,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         'service_price': job.servicePrice ?? '',
                         'assigned_technician': job.assignedTechnician ?? '',
                       },
-                      isaccept: true,
+                      isaccept: job.isAcceptedByYou,
                     ),
                     transition: Transition.zoom,
                   );

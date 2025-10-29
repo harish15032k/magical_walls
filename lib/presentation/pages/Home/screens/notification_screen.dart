@@ -69,7 +69,7 @@ class NotificationScreen extends StatelessWidget {
                         }
                         if (data.location != null) {
                           details.add(
-                              "Location: ${data.location!.addressLine1 ?? ''} ${data.location!.city ?? ''}");
+                              "Location: ${data.location}");
                         }
                       }
 

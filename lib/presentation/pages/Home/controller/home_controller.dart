@@ -31,6 +31,8 @@ class HomeController extends GetxController {
   var checkListData =<check.Datum>[].obs;
   RxList<bool> checklist = <bool>[].obs;
 
+  RxBool isAcceptedByYou =false.obs;
+
   var notifications = <noti.Datum>[].obs;
   var markAsCompletedImage = Rxn<File>();
 
@@ -197,6 +199,7 @@ class HomeController extends GetxController {
       };
       final res = await repo.acceptOrder(token, request);
       if (res['status'] == true) {
+        isAcceptedByYou.value= res['isAcceptedByYou'];
         if (status == 'reject') {
           upcomingOrders.removeAt(index!);
         }
@@ -205,6 +208,7 @@ class HomeController extends GetxController {
         getOrderList("upcoming");
         showCustomSnackBar(context: context, errorMessage: res['message']);
       } else {
+        isAcceptedByYou.value=false;
         showCustomSnackBar(context: context, errorMessage: res['message']);
       }
     } finally {
@@ -234,7 +238,7 @@ class HomeController extends GetxController {
     }
   }
 
-  verifyStarJobOtp(dynamic id, dynamic otp, bool? otpScreen) async {
+  verifyStarJobOtp(dynamic id, dynamic otp, bool? otpScreen ,BuildContext context) async {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       var token = preferences.getString('token') ?? "";
@@ -244,11 +248,14 @@ class HomeController extends GetxController {
 
       final res = await repo.verifyStarJobOtp(token, request, otpScreen);
       if (res['status'] == true) {
-     otpScreen==true? Get.offAll(() => BottomBar(tabIndex: 2 ),
+        otpScreen==true? Get.offAll(() => BottomBar(tabIndex: 2 ),
          transition: Transition.fadeIn):   Get.to(
           () => SelfieScreen(id: id, otpScreen: otpScreen),
           transition: Transition.rightToLeft,
         );
+      }
+      else{
+        showCustomSnackBar(context: context, errorMessage: res['message']);
       }
     } finally {
       isLoading.value = false;

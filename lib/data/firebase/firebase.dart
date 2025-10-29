@@ -22,7 +22,7 @@ Future<void> handleBackgroundMessage(RemoteMessage message) async {
 
 class FirebaseApi {
 
-
+  HomeController controller = Get.put(HomeController());
   final _firebaseMessaging = FirebaseMessaging.instance;
   final _localNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -97,21 +97,23 @@ void showNewServiceRequestPopup(BuildContext context, Map<String, dynamic> data)
           children: [
             GestureDetector( onTap: (){
               debugPrint("JobDetailsScreen $data");
-              // JobDetailsScreen(
-              //   job: {
-              //     'id': data['booking_service_id'].toString(),
-              //     'type': data['service_name'] ?? '',
-              //     'customer': job.customerName ?? '',
-              //     'date':  data['booking_date'].toString() ?? '',
-              //     'timeSlot':  data['time_slot'].toString() ?? '',
-              //     'address': job.address?.address ?? '',
-              //     'phone': job.customerPhoneNumber ?? '',
-              //     'duration': job.duration ?? '',
-              //     'tools': job.toolsRequired ?? [],
-              //     'service_price': job.servicePrice ?? '',
-              //     'assigned_technician': job.assignedTechnician ?? '',
-              //   },
-              // ),
+              Get.to(()=>JobDetailsScreen(
+                // job: {
+                //   'id': data['booking_service_id'].toString(),
+                //   'type': data['service_name'] ?? '',
+                //   'customer': job.customerName ?? '',
+                //   'date':  data['booking_date'].toString() ?? '',
+                //   'timeSlot':  data['time_slot'].toString() ?? '',
+                //   'address': job.address?.address ?? '',
+                //   'phone': job.customerPhoneNumber ?? '',
+                //   'duration': job.duration ?? '',
+                //   'tools': job.toolsRequired ?? [],
+                //   'service_price': job.servicePrice ?? '',
+                //   'assigned_technician': job.assignedTechnician ?? '',
+                // },
+                isaccept: false,
+              ),transition: Transition.rightToLeft);
+
             },
               child: Container(
                 padding: const EdgeInsets.all(12),
@@ -235,7 +237,22 @@ void showNewServiceRequestPopup(BuildContext context, Map<String, dynamic> data)
                                 context,
                                 index: 0,
                               );
-                              Get.back();
+                              Get.to(()=>JobDetailsScreen(
+                                // job: {
+                                //   'id': data['booking_service_id'].toString(),
+                                //   'type': data['service_name'] ?? '',
+                                //   'customer': job.customerName ?? '',
+                                //   'date':  data['booking_date'].toString() ?? '',
+                                //   'timeSlot':  data['time_slot'].toString() ?? '',
+                                //   'address': job.address?.address ?? '',
+                                //   'phone': job.customerPhoneNumber ?? '',
+                                //   'duration': job.duration ?? '',
+                                //   'tools': job.toolsRequired ?? [],
+                                //   'service_price': job.servicePrice ?? '',
+                                //   'assigned_technician': job.assignedTechnician ?? '',
+                                // },
+                                isaccept: homeController.isAcceptedByYou.value,
+                              ),transition: Transition.rightToLeft);
                             },
                             backgroundColor: CommonColors.primaryColor,
                             textColor: CommonColors.white,

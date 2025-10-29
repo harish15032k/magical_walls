@@ -163,7 +163,7 @@ class _StartJobOtpState extends State<StartJobOtp> {
                         photos,
                       );
                     } else {
-                      controller.verifyStarJobOtp(widget.id, pin, widget.isEndJob);
+                      controller.verifyStarJobOtp(widget.id, pin, widget.isEndJob,context);
                     }
                   },
 

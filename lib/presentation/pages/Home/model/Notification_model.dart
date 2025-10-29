@@ -92,7 +92,7 @@ class Data {
   String? type;
   String? service;
   String? datetime;
-  Location? location;
+  String? location;
   DateTime? notifyAt;
 
   Data({
@@ -111,7 +111,7 @@ class Data {
     type: json["type"],
     service: json["service"],
     datetime: json["datetime"],
-    location: json["location"] == null ? null : Location.fromMap(json["location"]),
+    location: json["location"],
     notifyAt: json["notify_at"] == null ? null : DateTime.parse(json["notify_at"]),
   );
 
@@ -119,75 +119,9 @@ class Data {
     "type": type,
     "service": service,
     "datetime": datetime,
-    "location": location?.toMap(),
+    "location": location,
     "notify_at": notifyAt?.toIso8601String(),
   };
 }
 
-class Location {
-  int? id;
-  String? city;
-  dynamic state;
-  dynamic country;
-  int? userId;
-  String? latitude;
-  String? pinCode;
-  String? longitude;
-  DateTime? createdAt;
-  int? isDefault;
-  DateTime? updatedAt;
-  String? addressLine1;
-  dynamic addressLine2;
 
-  Location({
-    this.id,
-    this.city,
-    this.state,
-    this.country,
-    this.userId,
-    this.latitude,
-    this.pinCode,
-    this.longitude,
-    this.createdAt,
-    this.isDefault,
-    this.updatedAt,
-    this.addressLine1,
-    this.addressLine2,
-  });
-
-  factory Location.fromJson(String str) => Location.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
-  factory Location.fromMap(Map<String, dynamic> json) => Location(
-    id: json["id"],
-    city: json["city"],
-    state: json["state"],
-    country: json["country"],
-    userId: json["user_id"],
-    latitude: json["latitude"],
-    pinCode: json["pin_code"],
-    longitude: json["longitude"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    isDefault: json["is_default"],
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-    addressLine1: json["address_line1"],
-    addressLine2: json["address_line2"],
-  );
-
-  Map<String, dynamic> toMap() => {
-    "id": id,
-    "city": city,
-    "state": state,
-    "country": country,
-    "user_id": userId,
-    "latitude": latitude,
-    "pin_code": pinCode,
-    "longitude": longitude,
-    "created_at": createdAt?.toIso8601String(),
-    "is_default": isDefault,
-    "updated_at": updatedAt?.toIso8601String(),
-    "address_line1": addressLine1,
-    "address_line2": addressLine2,
-  };
-}

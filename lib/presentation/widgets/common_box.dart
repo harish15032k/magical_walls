@@ -19,6 +19,8 @@ class CommonBox extends StatelessWidget {
   final VoidCallback? onReject;
   final bool? isLoadingAccept;
   final bool? isLoadingReject;
+  final bool? isAcceptedByYou;
+  final VoidCallback? isAcceptOnTap;
 
   const CommonBox({
     super.key,
@@ -33,6 +35,8 @@ class CommonBox extends StatelessWidget {
     this.tab,
     this.isLoadingAccept,
     this.isLoadingReject,
+    this.isAcceptedByYou,
+    this.isAcceptOnTap
   });
 
   @override
@@ -131,7 +135,7 @@ class CommonBox extends StatelessWidget {
                   textColor: CommonColors.white,
                   text: tab == 'ongoing' ? "Mark as Completed" : "View Summary",
                 )
-              : Row(
+              : isAcceptedByYou==true? CommonButton(text: "Click to Start Job" , onTap: isAcceptOnTap,):Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Expanded(
