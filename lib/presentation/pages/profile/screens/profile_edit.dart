@@ -1,16 +1,16 @@
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
+import 'package:magical_walls/presentation/pages/location/screens/location_access.dart';
 import 'package:magical_walls/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:magical_walls/presentation/pages/profile/model/profile_model.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
 import '../../../widgets/common_textfield.dart';
-import 'package:magical_walls/presentation/pages/profile/model/profile_model.dart';
 
 
 class ProfileEdit extends StatefulWidget {
@@ -94,14 +94,20 @@ class _ProfileEditState extends State<ProfileEdit> {
                     width: 25,
                   ),
                 ),
-                  const SizedBox(width: 8), Text("Edit Profile", style: CommonTextStyles.medium20)],
+                  const SizedBox(width: 8),
+                  Text("Edit Profile", style: CommonTextStyles.medium20),
+                  Spacer(),
+                GestureDetector(onTap: (){
+                  Get.to(()=> LocationAccessScreen(),transition: Transition.downToUp);
+                },child:   Icon(Icons.share_location, color: CommonColors.primaryColor),),
+                ],
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundColor: CommonColors.primaryColor.withOpacity(0.2),
+                    backgroundColor: CommonColors.primaryColor.withValues(alpha: 0.2),
                     backgroundImage: controller.pickedProfileImage != null
                         ? FileImage(controller.pickedProfileImage!)
                         : (widget.data.technicianImage != null && widget.data.technicianImage!.isNotEmpty)

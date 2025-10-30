@@ -47,7 +47,7 @@ class PersonalInfo extends StatelessWidget {
                   children: [
                     _twoColumnRow(
                       'Services',
-                      data.service?.join(", ") ?? "",
+                      data.services?.map((m) => m.serviceName).join(", ") ?? "",
                       'Years of Experience',
                       data.experience??'',
                     ),

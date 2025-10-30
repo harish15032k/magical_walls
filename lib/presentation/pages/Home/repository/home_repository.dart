@@ -12,7 +12,6 @@ import 'package:magical_walls/presentation/pages/Home/model/home_mode.dart';
 import '../model/Completed_order_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 class HomeRepository {

@@ -75,7 +75,7 @@ class Data {
   int? otpCode;
   DateTime? createdAt;
   DateTime? updatedAt;
-
+  List<Services>? services;
   Data({
     this.id,
     this.name,
@@ -125,7 +125,7 @@ class Data {
     this.fcmToken,
     this.otpCode,
     this.createdAt,
-    this.updatedAt,
+    this.updatedAt, this.services
   });
 
   factory Data.fromJson(String str) => Data.fromMap(json.decode(str));
@@ -194,6 +194,9 @@ class Data {
     json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
     updatedAt:
     json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+      services: json['services'] != null && json['services'] is List<dynamic>
+          ? List.from(json['services'].map((m) => Services.fromMap(m)))
+          : []
   );
 
   Map<String, dynamic> toMap() => {
@@ -246,5 +249,25 @@ class Data {
     "otp_code": otpCode,
     "created_at": createdAt?.toIso8601String(),
     "updated_at": updatedAt?.toIso8601String(),
+    "services" : List.from(services?.map((m) => m.toMap()) ?? [])
   };
+}
+
+class Services {
+  int? id;
+  String? serviceName;
+
+  Services({this.serviceName, this.id});
+
+  Services.fromMap(Map<String, dynamic> json){
+    id = json['id'];
+    serviceName = json['service_name'];
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'service_name': serviceName
+    };
+  }
 }

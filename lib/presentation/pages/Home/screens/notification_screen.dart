@@ -161,7 +161,7 @@ class NotificationScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 4.0),
                   child: Text(detail, style: CommonTextStyles.regular14),
                 );
-              }).toList(),
+              }),
             ],
             const SizedBox(height: 8),
             Text(

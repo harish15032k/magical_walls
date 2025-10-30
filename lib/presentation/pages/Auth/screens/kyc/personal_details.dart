@@ -9,7 +9,6 @@ import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/common_textfield.dart';
 
 import '../../../../widgets/common_droplist.dart';
-import '../../controller/auth_controller.dart';
 
 class PersonalDetails extends StatefulWidget {
   const PersonalDetails({super.key});

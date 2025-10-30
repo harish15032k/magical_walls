@@ -5,13 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:magical_walls/presentation/pages/Home/controller/home_controller.dart';
-import 'package:magical_walls/presentation/pages/Home/screens/home_screen.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
-
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text.dart';
-import 'bottom_bar.dart';
-
 class SelfieScreen extends StatefulWidget {
   final dynamic id;
   final bool? otpScreen;

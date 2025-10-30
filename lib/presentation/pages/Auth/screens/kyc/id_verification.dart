@@ -5,7 +5,6 @@ import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/presentation/pages/Auth/controller/auth_controller.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
-import 'package:magical_walls/presentation/widgets/common_textfield.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../core/utils/utils.dart';
