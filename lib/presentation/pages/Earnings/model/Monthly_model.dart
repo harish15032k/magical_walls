@@ -46,7 +46,7 @@ class Data {
   String toJson() => json.encode(toMap());
 
   factory Data.fromMap(Map<String, dynamic> json) => Data(
-    totalEarnings: json["total_earnings"],
+    totalEarnings: "${json["total_earnings"]}",
     totalPendingAmount: json["total_pending_amount"],
     completedCount: json["completed_count"],
     completedServicesPaid: json["completed_services_paid"] == null ? [] : List<CompletedServicesPaid>.from(json["completed_services_paid"]!.map((x) => CompletedServicesPaid.fromMap(x))),

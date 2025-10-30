@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:magical_walls/presentation/pages/Home/controller/home_controller.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text.dart';
 class SelfieScreen extends StatefulWidget {
@@ -22,7 +22,9 @@ class _SelfieScreenState extends State<SelfieScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    controller.startSelfiePic.value==null;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.startSelfiePic.value == null;
+    });
   }
   final HomeController controller = Get.find<HomeController>();
 

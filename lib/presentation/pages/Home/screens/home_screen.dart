@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'customer': job.customerName ?? '',
                     'date': job.bookingDate?.toString() ?? '',
                     'timeSlot': job.timeSlot?.toString() ?? '',
-                    'address': job.address?.address ?? '',
+                    'address': "${job.address?.address ?? ''},${job.address?.city ??""},${job.address?.pinCode ??""}",
                     'phone': job.customerPhoneNumber ?? '',
                     'duration': job.duration ?? '',
                     'tools': job.toolsRequired ?? [],
@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 customerName: job.customerName ?? '',
                 date: job.bookingDate != null ? job.bookingDate.toString() : '',
                 timeSlot: job.timeSlot?.toString() ?? '',
-                address: job.address?.address ?? '',
+                address: "${job.address?.address ?? ''},${job.address?.city ??""},${job.address?.pinCode ??""}",
                 isLoadingAccept:
                     homeController
                         .loadingAcceptMap[job.bookingId.toString()]

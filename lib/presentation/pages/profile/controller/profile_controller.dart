@@ -27,12 +27,12 @@ class ProfileController extends GetxController {
 
     getProfile().then((_) {
       if (profileData.isNotEmpty) {
-        isAvailable.value = profileData.first.status == 'available';
+        isAvailable.value = profileData.first.status == 'available' || profileData.first.status == '1';
       }
     });
     ever(profileData, (_) {
       if (profileData.isNotEmpty) {
-        isAvailable.value = profileData.first.status == 'available';
+        isAvailable.value = profileData.first.status == 'available' || profileData.first.status == '1';
       }
     });
   }
@@ -64,7 +64,7 @@ class ProfileController extends GetxController {
       Map<String, dynamic> request = {'available': status};
       final res = await repo.updateToggle(request, token!);
       if (res['status'] == true) {
-        profileData.first.status = status ? 'available' : 'unavailable';
+        profileData.first.status = status ? '1': '0';
         isAvailable.value = status;
         showCustomSnackBar(context: context, errorMessage: res['message']);
       } else {
