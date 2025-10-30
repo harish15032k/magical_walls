@@ -30,9 +30,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    super.initState();
     selectedTab = widget.initialindex ?? 0;
+    super.initState();
     profileController.getProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (selectedTab == 2) {
+        homeController.getOrderList("completed");
+      }
+    });
   }
 
   Widget _buildJobList(List<Datum> jobs, String emptyMessage,String tabName) {

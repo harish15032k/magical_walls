@@ -30,6 +30,9 @@ class _MarkAsCompletedState extends State<MarkAsCompleted> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.checklist.clear();
+      controller.startSelfiePic.value = null;
+      controller.commentController.text = '';
       controller.getCheckList(widget.id);
       print('API Called for ID: ${widget.id}');
     });

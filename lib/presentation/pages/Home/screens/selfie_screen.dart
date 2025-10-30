@@ -23,7 +23,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.startSelfiePic.value == null;
+      controller.startSelfiePic.value = null;
     });
   }
   final HomeController controller = Get.find<HomeController>();
