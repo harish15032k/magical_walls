@@ -119,10 +119,10 @@ class _CompletedJobScreenState extends State<CompletedJobScreen> {
                         _twoColumnRow(
                           'Name:',
                           widget.orderCompletedRes?.customerInformation?.name ??
-                              "",
-                          'Phone Number:',
-                          widget.orderCompletedRes?.customerInformation
-                              ?.phoneNumber ?? "",
+                              "",'',''
+                          // 'Phone Number:',
+                          // widget.orderCompletedRes?.customerInformation
+                          //     ?.phoneNumber ?? "",
                         ),
                         const SizedBox(height: 12),
                         Text(

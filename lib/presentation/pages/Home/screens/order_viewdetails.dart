@@ -123,9 +123,9 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       const SizedBox(height: 12),
                       _twoColumnRow(
                         'Name:',
-                        widget.job['customer'] ?? '',
-                        'Phone Number:',
-                        widget.job['phone'] ?? '',
+                        widget.job['customer'] ?? '','',''
+                        // 'Phone Number:',
+                        // widget.job['phone'] ?? '',
                       ),
                       const SizedBox(height: 12),
                       Text(
