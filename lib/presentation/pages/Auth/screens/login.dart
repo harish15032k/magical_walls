@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
@@ -11,7 +12,8 @@ import 'package:magical_walls/presentation/widgets/common_textfield.dart';
 import '../controller/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final ValueNotifier<String>? referralCode;
+  const LoginScreen({super.key, this.referralCode});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -19,6 +21,30 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final AuthController controller = Get.put(AuthController());
+
+
+  @override
+  void initState() {
+
+    super.initState();
+    widget.referralCode?.addListener((){
+
+      controller.referralController.text = widget.referralCode?.value ??"";
+      Fluttertoast.showToast(
+        msg:controller.referralController.text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      setState(() {
+
+
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +79,14 @@ class _LoginScreenState extends State<LoginScreen> {
             label: 'Mobile Number',
             hintText: 'Enter your mobile number',
             isRequired: true,
+            keyboardType: TextInputType.phone,
+          ),
+          SizedBox(height: Get.height * 0.025),
+          CommonTextField(
+            maxLength: 10,
+            controller: controller.referralController,
+            label: 'Referral Code',
+            hintText: 'Enter your referral code',
             keyboardType: TextInputType.phone,
           ),
           SizedBox(height: Get.height * 0.035),

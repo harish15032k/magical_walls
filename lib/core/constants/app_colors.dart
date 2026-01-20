@@ -15,5 +15,5 @@ class CommonColors {
   static const Color purple = Color(0xFF5D0491);
   static const Color blue = Color(0xFF0081E4);
   static const Color green = Color(0xFF30C400);
-
+  static const Color coolGreen = Color(0xFF34C759);
 }

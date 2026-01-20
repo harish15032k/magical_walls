@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/presentation/pages/Home/screens/bottom_bar.dart';
@@ -12,7 +13,8 @@ import 'package:magical_walls/presentation/pages/Auth/screens/kyc/profile_review
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/service_add.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final ValueNotifier<String> referralCode;
+  const SplashScreen({super.key,required this.referralCode});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -25,7 +27,10 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _loadAppData();
+
   }
+
+
 
   Future<void> _loadAppData() async {
     try {
@@ -42,9 +47,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (isFirstOpen == null || isFirstOpen == true) {
         prefs.setBool("isFirstOpen", false);
-        nextScreen = const GetStart();
+        nextScreen =  GetStart(referralCode: widget.referralCode,);
       } else if (isLogin != true) {
-        nextScreen = const LoginScreen();
+        nextScreen =  LoginScreen(referralCode: widget.referralCode,);
       } else if (isKycCompleted != 1) {
         nextScreen = const SelectService();
       } else if (isKycVerified == true) {

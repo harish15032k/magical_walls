@@ -25,6 +25,7 @@ class AuthController extends GetxController {
   AuthRepository repo = AuthRepository();
 
   final TextEditingController mobile = TextEditingController();
+  final TextEditingController referralController = TextEditingController();
   var isLoading = false.obs;
   var serviceList = <Datum>[].obs;
   List<dynamic> selectedService = [].obs;

@@ -11,6 +11,7 @@ import 'package:magical_walls/presentation/pages/profile/screens/profile_bank.da
 import 'package:magical_walls/presentation/pages/profile/screens/profile_doc.dart';
 import 'package:magical_walls/presentation/pages/profile/screens/profile_edit.dart';
 import 'package:magical_walls/presentation/pages/profile/screens/profile_suppport.dart';
+import 'package:magical_walls/presentation/pages/profile/screens/referral_screen.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/shimmer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -234,6 +235,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onTap: () {
                           Get.to(
                             () => HelpAndSupportScreen(),
+                            transition: Transition.rightToLeft,
+                          );
+                        },
+                      ),
+                      _buildMenuItem(
+                        iconPath: 'assets/images/ic_referral.png',
+                        title: "Referral",
+                        onTap: () {
+                          Get.to(
+                            () => ReferralScreen(),
                             transition: Transition.rightToLeft,
                           );
                         },
