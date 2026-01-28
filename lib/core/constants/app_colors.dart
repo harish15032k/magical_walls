@@ -16,4 +16,16 @@ class CommonColors {
   static const Color blue = Color(0xFF0081E4);
   static const Color green = Color(0xFF30C400);
   static const Color coolGreen = Color(0xFF34C759);
+  static const Color limeGreen = Color(0xFF04BF39);
+  static const Color mutedGreen = Color(0xFF5A8E40);
+  static const Color vividRed = Color(0xFFFF2A2A);
+  static const Color service = Color(0xFFF8F2EF);
+  static const Color red = Color(0xFFCE1515);
+  static const Color accentRed = Color(0xFFFF383C);
+  static const Color vividTangerine = Color(0xFFF68524);
+  static const Color yellow = Color(0xFFFFC107);
+  static const Color mistyRose = Color(0xFFFFE5DB);
+  static const Color grey95 = Color(0xFFF2F2F2);
+  static const Color midGrey = Color(0xFF878787);
+  static const Color goldenAmer = Color(0xFFECA958);
 }

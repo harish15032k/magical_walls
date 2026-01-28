@@ -10,6 +10,7 @@ import 'package:magical_walls/presentation/pages/profile/screens/personal_info.d
 import 'package:magical_walls/presentation/pages/profile/screens/profile_bank.dart';
 import 'package:magical_walls/presentation/pages/profile/screens/profile_doc.dart';
 import 'package:magical_walls/presentation/pages/profile/screens/profile_edit.dart';
+import 'package:magical_walls/presentation/pages/profile/screens/profile_support_ticket.dart';
 import 'package:magical_walls/presentation/pages/profile/screens/profile_suppport.dart';
 import 'package:magical_walls/presentation/pages/profile/screens/referral_screen.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
@@ -58,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: CommonTextStyles.regular16,
                     ),
                   )
-                : Column(
+                : SingleChildScrollView(child:  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
@@ -234,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: "Help & Support",
                         onTap: () {
                           Get.to(
-                            () => HelpAndSupportScreen(),
+                            () => ProfileSupportTicket(),
                             transition: Transition.rightToLeft,
                           );
                         },
@@ -255,7 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
           ),
         ),
-      ),
+      ),),
     );
   }
 

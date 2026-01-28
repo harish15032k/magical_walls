@@ -3,14 +3,17 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:magical_walls/core/utils/utils.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/login.dart';
 import 'package:magical_walls/presentation/pages/profile/repository/profile_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+
 import '../../../../data/urls/api_urls.dart';
 import '../model/profile_model.dart';
+import '../model/support_reason_model.dart';
+import '../model/support_tickets_model.dart';
 
 class ProfileController extends GetxController {
   ProfileRepository repo = ProfileRepository();
@@ -20,6 +23,11 @@ class ProfileController extends GetxController {
   final TextEditingController mobile = TextEditingController();
   final TextEditingController Address = TextEditingController();
   File? pickedProfileImage;
+  List<SupportReasonModel> supportReasonModelList = [];
+  SupportReasonModel? supportReasonModel;
+  RxBool isCustomerSupportListLoading = false.obs,
+      isHideSupportTicket = true.obs;
+  List<SupportModel> supportModel = [];
   @override
   void onInit() {
     // TODO: implement onInit
@@ -81,7 +89,10 @@ class ProfileController extends GetxController {
       var token = prefs.getString('token');
       isLoading.value = true;
 
-      Map<String, dynamic> request = {'message': message, 'subject': 'support'};
+      Map<String, dynamic> request = {
+        'description': message,
+        'reason': supportReasonModel?.reason ?? ""
+      };
       final res = await repo.riseSupport(request, token!);
       if (res['status'] == true) {
         showCustomSnackBar(context: context, errorMessage: res['message']);
@@ -192,5 +203,59 @@ class ProfileController extends GetxController {
     }
   }
 
+  Future<void> getSupportReason(BuildContext context) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    final dynamic response = await repo.getSupportReasonListRepo(
+        token: preferences.getString('token') ?? '');
+    if (response is Map && response['status'] == true &&
+        response['data'] is List) {
+      supportReasonModelList.addAll(List.from(
+          response['data'].map((it) => SupportReasonModel.fromJson(it))));
+    } else {
+      showCustomSnackBar(context: context,
+          errorMessage: response is Map
+              ? response['message'] ?? ""
+              : "Try Again");
+    }
+  }
+
+
+  Future<void> getTechnicianSupportList(BuildContext context) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    isCustomerSupportListLoading.value = true;
+    final dynamic response = await repo.getTechnicianSupportListRepo(
+        token: preferences.getString('token') ?? '');
+    supportModel.clear();
+    if (response is Map && response['status'] == true &&
+        response['data'] is List) {
+      List<SupportTicketsModel> dataTickets = List.from(
+          response['data'].map((it) => SupportTicketsModel.fromJson(it)));
+      List<String> monthYearList = [];
+      if (dataTickets.isNotEmpty) {
+        for (var i in dataTickets) {
+          final String result = Utils.filterMonthYearInDate(
+              i.createdAt ?? i.updatedAt ?? DateTime.now().toUtc().toString());
+          if (!monthYearList.contains(result)) {
+            monthYearList.add(result);
+          }
+          i.monthYear = result;
+        }
+        if (monthYearList.isNotEmpty) {
+          for (var i in monthYearList) {
+            supportModel.add(
+                SupportModel(monthYear: i,
+                    supportTickets: List.from(
+                        dataTickets.where((it) => it.monthYear == i))));
+          }
+        }
+      }
+    } else {
+      showCustomSnackBar(context: context,
+          errorMessage: response is Map
+              ? response['message'] ?? ""
+              : "Try Again");
+    }
+    isCustomerSupportListLoading.value = false;
+  }
 
 }

@@ -24,5 +24,6 @@ class ApiUrls{
   static const String markAsCompleted = '$_baseUrl/technician/completeWork';
   static const String getNotification = '$_baseUrl/getNotifications';
   static const String getCheckList = '$_baseUrl/getServiceIncludes';
-
+  static const String reason = "$_baseUrl/reason";
+  static const String customerSupportList = "$_baseUrl/customerSupportList";
 }

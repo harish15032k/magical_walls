@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -120,6 +121,39 @@ class Utils {
       if(context.mounted == true) {
         showCustomSnackBar(context: context, errorMessage: "Try Again");
       }
+    }
+  }
+
+
+  static String filterMonthYearInDate(String dateStr) {
+    try {
+      DateTime dateTime = DateTime.parse(dateStr);
+      return DateFormat('MMMM yyyy').format(dateTime);
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+
+  static String formatDateTimeInHoursDifference(String isoDate) {
+    try {
+      DateTime inputTime = DateTime.parse(isoDate).toLocal();
+      DateTime now = DateTime.now();
+      Duration diff = now.difference(inputTime);
+      if (diff.inDays < 1) {
+        if (diff.inHours >= 1) {
+          return '${diff.inHours} hour${diff.inHours > 1 ? 's' : ''} ago';
+        } else if (diff.inMinutes >= 1) {
+          return '${diff.inMinutes} minute${diff.inMinutes > 1 ? 's' : ''} ago';
+        } else {
+          return 'Just now';
+        }
+      }
+
+      // 1 day or more → show date & time
+      return DateFormat('dd, hh:mm a').format(inputTime);
+    }catch (e){
+      return isoDate;
     }
   }
 }

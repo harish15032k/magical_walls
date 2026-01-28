@@ -23,4 +23,21 @@ class ProfileRepository {
     return res;
 
   }
+
+  Future<dynamic> getSupportReasonListRepo({required String token}) async {
+    final response = await http.get(
+      ApiUrls.reason,
+      params: {},
+     token:  token,
+    );
+    return response;
+  }
+  Future<dynamic> getTechnicianSupportListRepo({required String token}) async {
+    final response = await http.get(
+      ApiUrls.customerSupportList,
+      params: {},
+      token:  token,
+    );
+    return response;
+  }
 }

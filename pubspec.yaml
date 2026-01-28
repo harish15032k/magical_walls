@@ -58,6 +58,7 @@ dependencies:
   url_launcher: ^6.3.2
   app_links: ^6.4.1
   fluttertoast: ^9.0.0
+  dropdown_button2: ^2.3.9
 
 
 
