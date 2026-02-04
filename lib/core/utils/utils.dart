@@ -134,6 +134,39 @@ class Utils {
     }
   }
 
+  static String convertDateAndTimeFromUtcTime(String utcTime,
+      {String? format }) {
+    try {
+      if (utcTime.isEmpty) {
+        return "";
+      }
+      DateTime dateTime = DateTime.parse(utcTime).toLocal();
+      String formatted = DateFormat(format ?? 'dd-MM-yyyy hh:mm a').format(
+          dateTime);
+      return formatted;
+    } catch (e) {
+      return utcTime;
+    }
+  }
+  static String doubleValueConversation(String value) {
+    try{
+      final data = double.tryParse(value);
+      return hasFractionGreaterThanZero("$data") ? data?.toStringAsFixed(2) ?? value :  "${data?.toInt() ?? value}";
+    }catch(e){
+      return value;
+    }
+  }
+
+  static bool hasFractionGreaterThanZero(String value) {
+    // Try to parse the number safely
+    double? number = double.tryParse(value);
+    if (number == null) return false; // Not a valid number
+
+    // Check if there’s a fractional part
+    return (number % 1) > 0;
+  }
+
+
 
   static String formatDateTimeInHoursDifference(String isoDate) {
     try {

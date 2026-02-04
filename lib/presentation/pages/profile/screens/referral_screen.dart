@@ -1,10 +1,16 @@
+
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:magical_walls/presentation/widgets/common_no_data_found.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text.dart';
+import '../../../../core/utils/utils.dart';
 import '../controller/profile_controller.dart';
+import '../model/referral_history_model.dart';
 
 class ReferralScreen extends StatefulWidget {
   const ReferralScreen({super.key});
@@ -15,6 +21,19 @@ class ReferralScreen extends StatefulWidget {
 
 class _ReferralScreenState extends State<ReferralScreen> {
   ProfileController controller = Get.put(ProfileController());
+
+
+  @override
+  void initState() {
+    controller.isLoading.value = false;
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((callback) async {
+      await controller.getReferral(context);
+      setState(() {
+
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +82,8 @@ class _ReferralScreenState extends State<ReferralScreen> {
                           style: CommonTextStyles.regular18,
                         ),
                         Text(
-                          "₹1499",
+                          "₹ ${controller.referralModel?.referralEarnings ??
+                              "0"}",
                           style: CommonTextStyles.bold18.copyWith(fontSize: 20),
                         ),
                       ],
@@ -100,12 +120,22 @@ class _ReferralScreenState extends State<ReferralScreen> {
                               "Referral Code: ",
                               style: CommonTextStyles.regular14,
                             ),
-                            Text("KARAN0123", style: CommonTextStyles.medium16),
+                            Expanded(child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal, child: Text(
+                                controller.referralCode,
+                                style: CommonTextStyles.medium16),),),
                           ],
                         ),
                       ),
                     ),
-                    Container(
+                    GestureDetector(onTap: () async {
+                      try {
+                        await FlutterClipboard.copy(controller.referralCode);
+                      }  catch (e) {
+                        showCustomSnackBar(
+                            context: context, errorMessage: "Try Again");
+                      }
+                    }, child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 11,
@@ -123,14 +153,40 @@ class _ReferralScreenState extends State<ReferralScreen> {
                           color: CommonColors.white,
                         ),
                       ),
-                    ),
+                    ),),
                   ],
                 ),
               ),
               Row(
                 spacing: 20,
                 children: [
-                  Container(
+                  GestureDetector(onTap: () async {
+                    debugPrint("referralShareLink 1");
+                  //  await controller.showShareAppBottomSheet(context);
+                    try {
+                      final Uri url = Uri.parse(
+                        "https://wa.me/?text=${controller.referralShareLink}",
+                      );
+                      debugPrint("referralShareLink 2");
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url, mode: LaunchMode
+                            .externalApplication);
+                        debugPrint("referralShareLink 3");
+                      } else {
+                        debugPrint("referralShareLink 4");
+                        showCustomSnackBar(
+                            context: context, errorMessage: "Whatsapp Not found");
+                        SharePlus.instance.share(
+                            ShareParams(text: controller.referralShareLink)
+                        );
+                      }
+                      debugPrint("referralShareLink 5");
+                    }catch(e){
+                      debugPrint("referralShareLink catch $e");
+                      showCustomSnackBar(
+                          context: context, errorMessage: "Whatsapp Not found");
+                    }
+                  },child:   Container(
                     padding: const EdgeInsets.symmetric(
                       vertical: 8,
                       horizontal: 9,
@@ -151,9 +207,12 @@ class _ReferralScreenState extends State<ReferralScreen> {
                         ),
                       ],
                     ),
-                  ),
+                  ),),
                   Expanded(
-                    child: Container(
+                    child: GestureDetector(onTap: () {
+                     // controller.showShareAppBottomSheet(context);
+
+                    }, child: Container(
                       alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
@@ -174,7 +233,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                         ],
                       ),
                     ),
-                  ),
+                    ),),
                 ],
               ),
               Expanded(
@@ -205,16 +264,21 @@ class _ReferralScreenState extends State<ReferralScreen> {
                         ),
                       ),
                       Expanded(
-                        child: ListView.separated(
-                          itemCount: 10,
+                        child: controller.isLoading.value ? Center(
+                          child: CircularProgressIndicator(strokeWidth: 1,
+                            color: CommonColors.primaryColor,),) : controller.referralModel?.referralHistory?.isNotEmpty == true ? ListView
+                            .separated(
+                          itemCount: controller.referralModel?.referralHistory?.length ?? 0,
                           itemBuilder: (c, p) {
+                            ReferralHistoryModel? ref = controller.referralModel
+                                ?.referralHistory?[p];
                             return Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 14,
                                 vertical: 6,
                               ),
                               child: Row(
-                                spacing: 5,
+                                spacing: 8,
                                 children: [
                                   Container(
                                     height: 35,
@@ -226,7 +290,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                                     ),
                                     clipBehavior: Clip.hardEdge,
                                     child: Image.network(
-                                      "https://media.istockphoto.com/id/2168774111/vector/avatar-or-person-sign-profile-picture-portrait-icon-user-profile-symbol.jpg?s=2048x2048&w=is&k=20&c=X3rLZOEjDZhy6uetvQtLhUbqz-_Ca3nllIxZY_1g_6Q=",
+                                      ref?.referredProfileImage ?? "",
                                       fit: BoxFit.cover,
                                       loadingBuilder: (c, w, p) {
                                         if (p == null) {
@@ -240,32 +304,46 @@ class _ReferralScreenState extends State<ReferralScreen> {
                                         return Image.asset(
                                           'assets/images/profile.png',
                                           height: 35,
-                                          width: 35,
+                                          width: 35,color: CommonColors.grey,
                                         );
                                       },
                                     ),
                                   ),
                                   Expanded(
-                                    child: Column(
+                                    child: Column(spacing: 2,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "John",
+                                          ref?.referredName ?? "User",
                                           style: CommonTextStyles.regular16,
                                         ),
                                         Text(
                                           "Joined using your referral",
                                           style: CommonTextStyles.regular14
                                               .copyWith(
-                                                color: CommonColors.secondary,
-                                              ),
+                                            color: CommonColors.secondary,
+                                          ),),
+                                        Text(
+                                          Utils
+                                              .convertDateAndTimeFromUtcTime(
+                                              ref?.createdAt ??
+                                                  ref?.updatedAt ??
+                                                  DateTime
+                                                      .now()
+                                                      .toUtc()
+                                                      .toString()),
+                                          style: CommonTextStyles.regular14
+                                              .copyWith(
+                                            color: CommonColors.secondary,
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Text(
-                                    "+ ₹600",
+                                    "+ ₹${Utils.doubleValueConversation(
+                                        ref?.amount ?? "0")}",
                                     style: CommonTextStyles.bold18.copyWith(
                                       color: CommonColors.coolGreen,
                                     ),
@@ -277,7 +355,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                           separatorBuilder: (c, p) {
                             return Divider(color: CommonColors.textFieldGrey);
                           },
-                        ),
+                        ) : CommonNoDataFound(),
                       ),
                     ],
                   ),

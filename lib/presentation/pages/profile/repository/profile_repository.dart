@@ -40,4 +40,14 @@ class ProfileRepository {
     );
     return response;
   }
+
+
+  Future<dynamic> getReferralRepo({required String token}) async {
+    final response = await http.get(
+      "${ApiUrls.referral}?token=$token",
+     params: {},
+     token:  token,
+    );
+    return response;
+  }
 }

@@ -26,4 +26,5 @@ class ApiUrls{
   static const String getCheckList = '$_baseUrl/getServiceIncludes';
   static const String reason = "$_baseUrl/reason";
   static const String customerSupportList = "$_baseUrl/customerSupportList";
+  static const String referral = "${_baseUrl}/referral";
 }

@@ -4,4 +4,7 @@ class AppConstants{
   static const String spend = "spend";
   static const String inprogress = "inprogress";
   static const String closed = "closed";
+  static const String type = "type";
+  static const String technician = "technician";
+  static const String referredBy = "referred_by";
 }

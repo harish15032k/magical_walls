@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../data/urls/api_urls.dart';
 import '../model/profile_model.dart';
+import '../model/referral_model.dart';
 import '../model/support_reason_model.dart';
 import '../model/support_tickets_model.dart';
 
@@ -28,6 +29,9 @@ class ProfileController extends GetxController {
   RxBool isCustomerSupportListLoading = false.obs,
       isHideSupportTicket = true.obs;
   List<SupportModel> supportModel = [];
+  ReferralModel? referralModel;
+  String referralCode = "";
+  String referralShareLink = "";
   @override
   void onInit() {
     // TODO: implement onInit
@@ -256,6 +260,24 @@ class ProfileController extends GetxController {
               : "Try Again");
     }
     isCustomerSupportListLoading.value = false;
+  }
+
+
+  Future<void> getReferral(BuildContext context) async {
+    isLoading.value = true;
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    final Map response = await repo.getReferralRepo(
+        token: preferences.getString('token') ?? '');
+
+    if (response['status'] == true && response['data'] is Map) {
+      referralModel = ReferralModel.fromJson(response['data']);
+      referralCode = referralModel?.referralCode ??"";
+      referralShareLink = "https://budgetappstudio.com/magicalwalls/user/referral/${referralCode}";
+    } else {
+      showCustomSnackBar(
+          context: context, errorMessage: response['message'] ?? "Try Again");
+    }
+    isLoading.value = false;
   }
 
 }

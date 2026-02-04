@@ -16,6 +16,7 @@ import 'package:magical_walls/presentation/pages/Auth/repository/auth_repository
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/profile_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/constants/api_urls.dart';
 import '../../Home/screens/bottom_bar.dart';
 import '../model/verify_otp_model.dart' hide Data;
 import '../screens/kyc/service_add.dart';
@@ -75,7 +76,8 @@ class AuthController extends GetxController {
       Map<String, String> request = {
         'phone': mobile.text,
         'fcm_token':fcmToken??'',
-
+        if(referralController.text.isNotEmpty)
+        AppConstants.referredBy : referralController.text,
       };
 
       GetOtpRes res = await repo.getOtp(request);
@@ -99,7 +101,11 @@ class AuthController extends GetxController {
     try {
       print('mobile $mobile');
       isLoading.value = true;
-      Map<String, String> request = {'phone': mobile, 'code': pin};
+      Map<String, String> request = {
+        'phone': mobile,
+        'code': pin,
+        AppConstants.type: AppConstants.technician
+      };
       VerifyOtpRes res = await repo.verifyOtp(request);
 
       if (res.status == true) {
