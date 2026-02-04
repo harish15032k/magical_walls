@@ -1,4 +1,4 @@
-package com.example.magical_walls
+package com.magicwalls.technician
 
 import io.flutter.embedding.android.FlutterActivity
 

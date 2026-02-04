@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:file_picker/file_picker.dart';
@@ -32,6 +33,7 @@ class NetworkApiService extends BaseApiService {
 
   @override
   Future<Map<String, dynamic>> post(String url, dynamic data, {String? token}) async {
+    debugPrint("token $token");
     return _request(() async {
       return await _client
           .post(
