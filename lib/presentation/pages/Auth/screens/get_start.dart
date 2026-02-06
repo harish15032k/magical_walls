@@ -6,8 +6,7 @@ import 'package:magical_walls/presentation/pages/Auth/screens/login.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
 class GetStart extends StatefulWidget {
-  final ValueNotifier<String>? referralCode;
-  const GetStart({super.key,this.referralCode});
+  const GetStart({super.key});
 
   @override
   State<GetStart> createState() => _GetStartState();
@@ -54,7 +53,7 @@ class _GetStartState extends State<GetStart> {
                 text: 'Get Started',
                 onTap: () {
                   Get.to(
-                    () => LoginScreen(referralCode: widget.referralCode,),
+                    () => LoginScreen(),
                     transition: Transition.downToUp,
                     duration: Duration(milliseconds: 500),
                   );

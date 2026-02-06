@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,32 +37,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final appLinks = AppLinks();
-  StreamSubscription? subscription;
-  ValueNotifier<String> referralCode = ValueNotifier<String>("");
 
   @override
   void initState() {
     super.initState();
-    subscription = appLinks.uriLinkStream.listen((uri) {
-      // Do something (navigation, ...)
-      debugPrint(" appLinks.uriLinkStream  $uri");
-      referralCode.value = uri.toString();
-      Fluttertoast.showToast(
-        msg: "appLinks.uriLinkStream  $uri",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    });
+
+
   }
 
   @override
   void dispose() {
-    subscription?.cancel();
+
     super.dispose();
   }
 
@@ -73,7 +56,7 @@ class _MyAppState extends State<MyApp> {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
-      home: SplashScreen(referralCode: referralCode,),
+      home: SplashScreen(),
     );
   }
   }

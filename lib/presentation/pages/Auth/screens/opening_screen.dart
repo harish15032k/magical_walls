@@ -13,8 +13,7 @@ import 'package:magical_walls/presentation/pages/Auth/screens/kyc/profile_review
 import 'package:magical_walls/presentation/pages/Auth/screens/kyc/service_add.dart';
 
 class SplashScreen extends StatefulWidget {
-  final ValueNotifier<String> referralCode;
-  const SplashScreen({super.key,required this.referralCode});
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -47,9 +46,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (isFirstOpen == null || isFirstOpen == true) {
         prefs.setBool("isFirstOpen", false);
-        nextScreen =  GetStart(referralCode: widget.referralCode,);
+        nextScreen =  GetStart();
       } else if (isLogin != true) {
-        nextScreen =  LoginScreen(referralCode: widget.referralCode,);
+        nextScreen =  LoginScreen();
       } else if (isKycCompleted != 1) {
         nextScreen = const SelectService();
       } else if (isKycVerified == true) {

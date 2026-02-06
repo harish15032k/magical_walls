@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:app_links/app_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,8 +15,7 @@ import 'package:magical_walls/presentation/widgets/common_textfield.dart';
 import '../controller/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
-  final ValueNotifier<String>? referralCode;
-  const LoginScreen({super.key, this.referralCode});
+  const LoginScreen({super.key,});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -21,15 +23,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final AuthController controller = Get.put(AuthController());
-
-
+  final appLinks = AppLinks();
+  StreamSubscription? subscription;
   @override
   void initState() {
 
     super.initState();
-    widget.referralCode?.addListener((){
+    subscription = appLinks.uriLinkStream.listen((uri) {
 
-      controller.referralController.text = widget.referralCode?.value ??"";
+      controller.referralController.text = uri.toString();
       Fluttertoast.showToast(
         msg:controller.referralController.text,
         toastLength: Toast.LENGTH_SHORT,
@@ -44,6 +46,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
       });
     });
+  }
+
+
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
   }
 
   @override
