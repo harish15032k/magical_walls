@@ -83,11 +83,10 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           SizedBox(height: Get.height * 0.025),
           CommonTextField(
-            maxLength: 10,
             controller: controller.referralController,
             label: 'Referral Code',
             hintText: 'Enter your referral code',
-            keyboardType: TextInputType.phone,
+            keyboardType: TextInputType.text,
           ),
           SizedBox(height: Get.height * 0.035),
           Obx(()=>

@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/opening_screen.dart';
+import 'package:magical_walls/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:magical_walls/presentation/pages/wallet/controller/wallet_controller.dart';
 
 import 'data/firebase/firebase.dart';
 
@@ -18,6 +20,8 @@ void main() async {
   await Firebase.initializeApp();
 
   await FirebaseApi().initNotification();
+  Get.put( ProfileController());
+  Get.put( WalletController());
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

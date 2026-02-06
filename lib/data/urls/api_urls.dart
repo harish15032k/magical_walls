@@ -26,5 +26,9 @@ class ApiUrls{
   static const String getCheckList = '$_baseUrl/getServiceIncludes';
   static const String reason = "$_baseUrl/reason";
   static const String customerSupportList = "$_baseUrl/customerSupportList";
-  static const String referral = "${_baseUrl}/referral";
+  static const String referral = "$_baseUrl/referral";
+  static const String wallet = "$_baseUrl/userWalletList?page=";
+  static const String addCustomerPayment = "$_baseUrl/addCustomerPayment?token=";
+  static const String verifyCustomerPayment = "$_baseUrl/verifyCustomerPayment?token=";
+  static const String walletRechargeBooking = "$_baseUrl/wallet";
 }

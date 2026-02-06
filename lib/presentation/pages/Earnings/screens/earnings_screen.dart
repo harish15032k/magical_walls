@@ -501,8 +501,6 @@ class EarningsFullListScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-
-
               Expanded(
                 child: ListView.separated(
                   itemCount: earningsList.length,

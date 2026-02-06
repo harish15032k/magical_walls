@@ -20,7 +20,7 @@ class ReferralHistoryModel {
     id = json['id'];
     userId = json['user_id'];
     referredUserId = json['referred_user_id'];
-    amount = "${json['amount']}";
+    amount = "${json['amount']?? 0 }";
     credited = json['credited'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];

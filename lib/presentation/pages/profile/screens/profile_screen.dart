@@ -17,6 +17,8 @@ import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/shimmer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../wallet/screen/wallet_main.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -226,6 +228,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             () => BankDetailsScreen(
                               data: controller.profileData.first,
                             ),
+                            transition: Transition.rightToLeft,
+                          );
+                        },
+                      ),
+                      _buildMenuItem(
+                        iconPath: 'assets/images/wallet.png',
+                        title: "Wallet",
+                        onTap: () {
+                          Get.to(
+                                () => WalletMain(),
                             transition: Transition.rightToLeft,
                           );
                         },

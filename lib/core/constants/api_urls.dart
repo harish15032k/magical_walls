@@ -6,5 +6,8 @@ class AppConstants{
   static const String closed = "closed";
   static const String type = "type";
   static const String technician = "technician";
+  static const String token = "token";
   static const String referredBy = "referred_by";
+  static const String orderId = "order_id";
+
 }

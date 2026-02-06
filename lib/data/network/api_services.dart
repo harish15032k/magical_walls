@@ -47,6 +47,7 @@ class NetworkApiService extends BaseApiService {
 
   @override
   Future<Map<String, dynamic>> get(String url, {Map<String, dynamic>? params, String? token}) async {
+    debugPrint("token $token");
     return _request(() async {
       final uri = Uri.parse(url).replace(
         queryParameters: params?.map((k, v) => MapEntry(k, v.toString())),
