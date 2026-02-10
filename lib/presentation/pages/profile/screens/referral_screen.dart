@@ -58,7 +58,6 @@ class _ReferralScreenState extends State<ReferralScreen> {
                   Text("Referral", style: CommonTextStyles.medium20),
                 ],
               ),
-
               Container(
                 margin: const EdgeInsets.only(top: 18, bottom: 14),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -157,7 +156,13 @@ class _ReferralScreenState extends State<ReferralScreen> {
                   ],
                 ),
               ),
-              Row(
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 7),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: CommonColors.lightGray
+                ),
+                child: Row(
                 spacing: 20,
                 children: [
                   GestureDetector(onTap: () async {
@@ -235,6 +240,20 @@ class _ReferralScreenState extends State<ReferralScreen> {
                     ),
                     ),),
                 ],
+                ),),
+              Container(
+                margin: const EdgeInsets.only(top: 7),
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: CommonColors.white,
+                  border: Border.all(color: CommonColors.platinum),
+                    boxShadow: [
+                      BoxShadow(offset: const Offset(1, 2),
+                          blurRadius: 7.9,
+                          color: CommonColors.black.withAlpha(25))
+                    ]
+                ),
               ),
               Expanded(
                 child: Container(

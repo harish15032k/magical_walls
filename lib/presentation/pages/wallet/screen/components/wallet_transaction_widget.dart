@@ -28,8 +28,7 @@ class _WalletTransactionWidgetState extends State<WalletTransactionWidget> {
     controller = widget.controller;
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-  //   onClickFilters(controller.selectedWalletTransactionFilter);
-      setUpTransactionData();
+     onClickFilters(controller.selectedWalletTransactionFilter);
     });
 
     controller.walletRechargeListener.addListener(onWalletRechargeCallBack);
@@ -95,7 +94,7 @@ class _WalletTransactionWidgetState extends State<WalletTransactionWidget> {
 
   @override
   void dispose() {
-    controller.walletRechargeListener.addListener(onWalletRechargeCallBack);
+   // controller.walletRechargeListener.removeListener(onWalletRechargeCallBack);
     scrollController.dispose();
     super.dispose();
   }
@@ -214,10 +213,10 @@ class _WalletTransactionWidgetState extends State<WalletTransactionWidget> {
                     ),
                   ),
                   Text(
-                    " ${data.type?.toUpperCase() == AppConstants.spend.toUpperCase() ? '-' : '+'} ₹${data.amount ?? ""}",
+                    " ${data.type?.toUpperCase() == AppConstants.spend.toUpperCase() || data.type?.toUpperCase() == AppConstants.withdraw.toUpperCase() ? '-' : '+'} ₹${data.amount ?? ""}",
                     style: CommonTextStyles.regular14.copyWith(
                       color: data.type?.toUpperCase() ==
-                          AppConstants.spend.toUpperCase()
+                          AppConstants.spend.toUpperCase()|| data.type?.toUpperCase() == AppConstants.withdraw.toUpperCase()
                           ? CommonColors.vividRed : CommonColors.limeGreen,
                     ),
                   ),

@@ -66,7 +66,7 @@ class WalletBalanceWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(spacing: 8, children: [
-                          Text("Add Now", style: CommonTextStyles.regular14,),
+                          Text("Withdraw", style: CommonTextStyles.regular14,),
                           Icon(Icons.arrow_forward_ios_rounded, size: 15,)
                         ],),
                       ),

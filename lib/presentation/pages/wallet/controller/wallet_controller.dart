@@ -5,6 +5,7 @@ import 'package:magical_walls/core/utils/utils.dart';
 import 'package:magical_walls/presentation/pages/wallet/controller/payment_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Earnings/screens/withdraw.dart';
 import '../../profile/controller/profile_controller.dart';
 import '../model/wallet_model.dart';
 import '../repository/wallet_repository.dart';
@@ -19,7 +20,7 @@ class WalletController extends GetxController
     "All",
     "Earning",
     "Spend",
-    "Refund",
+    "Withdraw",
   ];
   String selectedWalletTransactionFilter = "All";
   final RxBool isWalletTransactionFullScreen = false.obs,
@@ -102,11 +103,14 @@ class WalletController extends GetxController
   }
 
   void moveWalletRecharge() async {
-    final data = await Get.to(
-      () => WalletRecharge(controller: this),
-      transition: Transition.rightToLeft,
-    );
-    walletRechargeListener.value = !walletRechargeListener.value;
+    // final data = await Get.to(
+    //   () => WalletRecharge(controller: this),
+    //   transition: Transition.rightToLeft,
+    // );
+    // walletRechargeListener.value = !walletRechargeListener.value;
+    Get.to(() =>
+        WithdrawScreen(
+          totalEarnings: walletBalance.value),transition: Transition.rightToLeft,);
   }
 
   @override

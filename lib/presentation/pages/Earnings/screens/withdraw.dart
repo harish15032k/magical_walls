@@ -22,6 +22,12 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
   EarningsController controller = Get.put(EarningsController());
 
   @override
+  void initState() {
+    controller.isLoading.value = false;
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _amountController.dispose();
     super.dispose();

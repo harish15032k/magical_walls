@@ -159,7 +159,7 @@ class LocationAccessController extends GetxController {
 
       Placemark place = placemarks[0];
       currentLocation =
-          "${place.name}, ${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
+          " ${place.street ?? place.name}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
 
       debugPrint("currentLocation $currentLocation");
     } catch (e) {

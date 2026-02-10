@@ -28,4 +28,6 @@ class CommonColors {
   static const Color grey95 = Color(0xFFF2F2F2);
   static const Color midGrey = Color(0xFF878787);
   static const Color goldenAmer = Color(0xFFECA958);
+  static const Color lightGray = Color(0xFFEDEDED);
+  static const Color platinum = Color(0xFFE6E6E6);
 }

@@ -27,7 +27,7 @@ class ApiUrls{
   static const String reason = "$_baseUrl/reason";
   static const String customerSupportList = "$_baseUrl/customerSupportList";
   static const String referral = "$_baseUrl/referral";
-  static const String wallet = "$_baseUrl/userWalletList?page=";
+  static const String wallet = "$_baseUrl/technician/technicianWallet?page=";
   static const String addCustomerPayment = "$_baseUrl/addCustomerPayment?token=";
   static const String verifyCustomerPayment = "$_baseUrl/verifyCustomerPayment?token=";
   static const String walletRechargeBooking = "$_baseUrl/wallet";

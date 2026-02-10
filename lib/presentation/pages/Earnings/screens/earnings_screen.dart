@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:magical_walls/core/constants/app_colors.dart';
 import 'package:magical_walls/core/constants/app_text.dart';
 import 'package:magical_walls/presentation/pages/Earnings/screens/withdraw.dart';
+import 'package:magical_walls/presentation/pages/wallet/screen/wallet_main.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 
 import '../controller/earnings_controller.dart';
@@ -119,15 +120,13 @@ class _EarningsScreenState extends State<EarningsScreen> {
                               borderRadius: 3,
                               width: 100,
                               height: 30,
-                              text: "Withdraw",
+                              text: "Wallet",
                               backgroundColor: Colors.white,
                               textColor: Colors.deepPurple,
                               borderColor: Colors.white,
                               onTap: () {
                                 Get.to(() =>
-                                    WithdrawScreen(
-                                      totalEarnings: total.toStringAsFixed(
-                                          0),));
+                                    WalletMain(),transition: Transition.rightToLeft);
                               },
                             ),
                           ],
