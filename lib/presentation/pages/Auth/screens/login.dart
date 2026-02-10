@@ -11,6 +11,7 @@ import 'package:magical_walls/core/utils/utils.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/otp_screen.dart';
 import 'package:magical_walls/presentation/widgets/common_button.dart';
 import 'package:magical_walls/presentation/widgets/common_textfield.dart';
+import 'package:play_install_referrer/play_install_referrer.dart';
 
 import '../controller/auth_controller.dart';
 
@@ -25,12 +26,38 @@ class _LoginScreenState extends State<LoginScreen> {
   final AuthController controller = Get.put(AuthController());
   final appLinks = AppLinks();
   StreamSubscription? subscription;
+
+  Future<void> getInstallReferrer() async {
+    try {
+      final referrer = (await PlayInstallReferrer.installReferrer).installReferrer;
+
+      debugPrint("getInstallReferrer $referrer");
+      if (referrer != null) {
+        final uri = Uri.parse('https://dummy?$referrer');
+        // https://play.google.com/store/apps/details?id=com.your.app
+        // &referrer=utm_source=test&utm_medium=emulator&utm_campaign=debug123
+
+        final utmSource = uri.queryParameters['utm_source'];
+        final utmCampaign = uri.queryParameters['utm_campaign'];
+        final utmMedium = uri.queryParameters['utm_medium'];
+
+        debugPrint('utm_source: $utmSource');
+        debugPrint('utm_campaign: $utmCampaign');
+        debugPrint('utm_medium: $utmMedium');
+        if(utmCampaign?.isNotEmpty == true) {
+          controller.referralController.text = utmCampaign ?? "";
+        }
+      }
+    } catch (e) {
+      debugPrint('Install referrer error: $e');
+    }
+  }
   @override
   void initState() {
 
     super.initState();
+    getInstallReferrer();
     subscription = appLinks.uriLinkStream.listen((uri) {
-
       controller.referralController.text = uri.toString();
       Fluttertoast.showToast(
         msg:controller.referralController.text,
