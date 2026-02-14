@@ -156,104 +156,61 @@ class _ReferralScreenState extends State<ReferralScreen> {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 7),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: CommonColors.lightGray
-                ),
-                child: Row(
-                spacing: 20,
-                children: [
-                  GestureDetector(onTap: () async {
-                    debugPrint("referralShareLink 1");
-                  //  await controller.showShareAppBottomSheet(context);
-                    try {
-                      final Uri url = Uri.parse(
-                        "https://wa.me/?text=${controller.referralShareLink}",
-                      );
-                      debugPrint("referralShareLink 2");
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url, mode: LaunchMode
-                            .externalApplication);
-                        debugPrint("referralShareLink 3");
-                      } else {
-                        debugPrint("referralShareLink 4");
-                        showCustomSnackBar(
-                            context: context, errorMessage: "Whatsapp Not found");
-                        SharePlus.instance.share(
-                            ShareParams(text: controller.referralShareLink)
-                        );
-                      }
-                      debugPrint("referralShareLink 5");
-                    }catch(e){
-                      debugPrint("referralShareLink catch $e");
-                      showCustomSnackBar(
-                          context: context, errorMessage: "Whatsapp Not found");
-                    }
-                  },child:   Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 9,
-                    ),
+              Row(
+              spacing: 20,
+              children: [
+                GestureDetector(onTap: () async {
+                 await controller.showShareAppBottomSheet(context,true);
+
+                },child:   Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 9,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: CommonColors.primaryColor),
+                  ),
+                  child: Row(
+                    spacing: 5,
+                    children: [
+                      Image.asset('assets/images/ic_whatapp.png',width: 24,height: 24,),
+                      Text(
+                        "Share via whatsapp",
+                        style: CommonTextStyles.medium12.copyWith(
+                          color: CommonColors.primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),),
+                Expanded(
+                  child: GestureDetector(onTap: () {
+                   controller.showShareAppBottomSheet(context,false);
+
+                  }, child: Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: CommonColors.primaryColor),
                     ),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       spacing: 5,
                       children: [
-                        Image.asset('assets/images/ic_whatapp.png',width: 24,height: 24,),
+                        Image.asset('assets/images/ic_referral_share.png',width: 24,height: 24,),
                         Text(
-                          "Share via whatsapp",
+                          "Share Link",
                           style: CommonTextStyles.medium12.copyWith(
                             color: CommonColors.primaryColor,
                           ),
                         ),
                       ],
                     ),
+                  ),
                   ),),
-                  Expanded(
-                    child: GestureDetector(onTap: () {
-                     // controller.showShareAppBottomSheet(context);
-
-                    }, child: Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: CommonColors.primaryColor),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 5,
-                        children: [
-                          Image.asset('assets/images/ic_referral_share.png',width: 24,height: 24,),
-                          Text(
-                            "Share Link",
-                            style: CommonTextStyles.medium12.copyWith(
-                              color: CommonColors.primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ),),
-                ],
-                ),),
-              Container(
-                margin: const EdgeInsets.only(top: 7),
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: CommonColors.white,
-                  border: Border.all(color: CommonColors.platinum),
-                    boxShadow: [
-                      BoxShadow(offset: const Offset(1, 2),
-                          blurRadius: 7.9,
-                          color: CommonColors.black.withAlpha(25))
-                    ]
-                ),
+              ],
               ),
               Expanded(
                 child: Container(

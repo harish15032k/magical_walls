@@ -2,19 +2,24 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:magical_walls/core/utils/utils.dart';
 import 'package:magical_walls/presentation/pages/Auth/screens/login.dart';
 import 'package:magical_walls/presentation/pages/profile/repository/profile_repository.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/constants/api_urls.dart';
 import '../../../../data/urls/api_urls.dart';
 import '../model/profile_model.dart';
 import '../model/referral_model.dart';
 import '../model/support_reason_model.dart';
 import '../model/support_tickets_model.dart';
+import '../screens/shareapp_referral_bottom_sheet.dart';
 
 class ProfileController extends GetxController {
   ProfileRepository repo = ProfileRepository();
@@ -30,11 +35,11 @@ class ProfileController extends GetxController {
       isHideSupportTicket = true.obs;
   List<SupportModel> supportModel = [];
   ReferralModel? referralModel;
-  String referralCode = "";
-  String referralShareLink = "";
+  String referralCode = "",
+      referralUserShareLink = "",
+      referralTechnicianShareLink = "";
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
 
     getProfile().then((_) {
@@ -116,6 +121,10 @@ class ProfileController extends GetxController {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.remove('isLogin');
     preferences.remove('locationUpdated');
+    referralModel = null;
+    referralCode = "";
+    referralUserShareLink = "";
+    referralTechnicianShareLink = "";
     Get.offAll(LoginScreen());
   }
 
@@ -272,12 +281,53 @@ class ProfileController extends GetxController {
     if (response['status'] == true && response['data'] is Map) {
       referralModel = ReferralModel.fromJson(response['data']);
       referralCode = referralModel?.referralCode ??"";
-      referralShareLink = "https://budgetappstudio.com/magicalwalls/user/referral/${referralCode}";
+      referralUserShareLink = "https://budgetappstudio.com/magicalwalls/user/referral/$referralCode";
+      referralTechnicianShareLink = "https://budgetappstudio.com/magicalwalls/technician/referral/$referralCode";
     } else {
       showCustomSnackBar(
           context: context, errorMessage: response['message'] ?? "Try Again");
     }
     isLoading.value = false;
   }
+
+  Future<void> showShareAppBottomSheet(BuildContext context,
+      bool isWhatAppShare) async {
+    final data = await showModalBottomSheet(
+      context: context, useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => ShareAppBottomSheet(isWhatsappShare: isWhatAppShare,),
+    );
+    if (data != null && data is String && context.mounted) {
+      final String selectedShareLink = data == AppConstants.technician
+          ? referralTechnicianShareLink
+          : referralUserShareLink;
+      if (isWhatAppShare) {
+        try {
+          final Uri url = Uri.parse(
+            "https://wa.me/?text=$selectedShareLink",
+          );
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url, mode: LaunchMode
+                .externalApplication);
+          } else {
+            showCustomSnackBar(
+                context: context, errorMessage: "Whatsapp Not found");
+            SharePlus.instance.share(
+                ShareParams(text: selectedShareLink)
+            );
+          }
+        } catch (e) {
+          debugPrint("referralShareLink catch $e");
+          showCustomSnackBar(
+              context: context, errorMessage: "Whatsapp Not found");
+        }
+      } else {
+        await SharePlus.instance.share(ShareParams(text: selectedShareLink));
+      }
+    }
+  }
+
 
 }
